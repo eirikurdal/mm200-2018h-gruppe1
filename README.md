@@ -7,6 +7,6 @@
   * Vi jobber nok individuelt med oppgaver, men ønsker å hjelpe hverandre og være tilgjengelige. 
   * Tester i fellesskap for å få felles forståelse.
 * Vi bruker Trello:
-  * https://trello.com/mm200gruppe1
+  * https://trello.com/b/bsrOYFdt
 * Kommunikasjon kan også foregå på facebook messenger.
 
