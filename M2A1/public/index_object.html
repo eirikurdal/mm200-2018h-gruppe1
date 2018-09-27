@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>M2A1</title>
+    <style>
+        div {
+            margin: 15px;
+            background: lightgrey;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="createNewUserContainer">
+        <h1>Ny bruker</h1>
+        Navn:<input id="newUserName" type="text"><br>
+        Epost:<input id="userMail" type="text"><br>
+        Passord:<input id="userPassword" type="text"><br>
+        <button id="btnCreate">Submit</button>
+    </div>
+    <div id="logInContainer">
+        <h1>Logg inn</h1>
+        Navn:<input id="userName" type="text"><br>
+        <button id="btnLogIn">Submit</button>
+    </div>
+    <ol id="userList"></ol>
+    
+    
+    <script>
+        let txtOut = document.getElementById('txtOut');
+        let btn = document.getElementById('btnCreate');
+        btn.onclick = addNewUser;
+        
+        const ADD_USER_ENDPOINT = '/api/user';
+        //const GET_USER_ENDPOINT = '/app/users';
+        const INPUT_NAME_ELEMENT = "newUserName";
+        const INPUT_MAIL_ELEMENT = "userMail";
+        const INPUT_PASSWORD_ELEMENT = "userPassword";
+        const NAMES_LIST_ELEMENT = "userList";
+        
+                
+        function addNewUser(){
+            
+            let userName = document.getElementById(INPUT_NAME_ELEMENT).value;
+            let userMail = document.getElementById(INPUT_MAIL_ELEMENT).value;
+            let userPassword = document.getElementById(INPUT_PASSWORD_ELEMENT).value;
+            
+            let user = {
+                //id: users.length +1,
+                userName: userName,
+                mail: userMail,
+                password: userPassword
+            };
+            
+            
+            sendAndRecieveUserName(user).then(users => {
+                showUserNameInList(users, NAMES_LIST_ELEMENT)
+            });   
+        }
+        
+        function showUserNameInList(users, target){
+            let list = document.getElementById(target);
+            
+            list.innerHTML = "";
+            
+            users.forEach(user => {
+                let li = document.createElement("li");
+                li.innerText = user;
+                list.appendChild(li);
+            });
+        }
+        
+        function sendAndRecieveUserName(user){
+            return fetch(ADD_USER_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                },
+                body: JSON.stringify(user)
+            }).then(data => {
+                return data.json();
+                
+            });
+        }
+        
+    </script>
+</body>
+</html>
