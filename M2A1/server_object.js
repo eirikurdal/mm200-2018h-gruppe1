@@ -14,11 +14,13 @@ const users = [];
 
 app.post('/api/user', function (req, res, next) {
 
-    let userName = req.body.userName;
+    //let userName = req.body.userName;
+    let userMail = req.body.userMail;
 
-    let isUnique = !isNameInList(users, userName);
+    let isUnique = !isMailInList(users, userMail);
 
-    if (isUnique && userName) {
+    if (isUnique && userMail) {
+        req.body.id = users.length + 1;
         users.push(req.body);
         res.status(200).json(users).end();
     } else {
@@ -26,11 +28,11 @@ app.post('/api/user', function (req, res, next) {
     }
 });
 
-function isNameInList(list, name) {
-    let searchName = name.toString().toLowerCase();
+function isMailInList(list, mail) {
+    let searchMail = mail.toString().toLowerCase();
     let result = false;
     for (let user in list) {
-        if (list[user].userName.toLowerCase() === searchName) {
+        if (list[user].userMail.toLowerCase() === searchMail) {
             result = true;
             break;
         }

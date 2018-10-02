@@ -62,13 +62,14 @@
                 let user = {
                     //id: users.length +1,
                     userName: userName,
-                    mail: userMail,
+                    userMail: userMail,
                     password: userPassword
                 };
 
                 sendAndRecieveUserName(user).then(users => {
                     showUserNameInList(users, NAMES_LIST_ELEMENT)
                 });
+                
             }
         }
 
