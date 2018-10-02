@@ -5,7 +5,7 @@ const app = express();
 const port = (process.env.PORT || 8080);
 
 app.set('port', port);
-app.use(express.static('public'));
+app.use(express.static('/M2A1/public'));
 app.use(bodyParser.json());
 
 //------------------------------
