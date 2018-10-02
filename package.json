@@ -2,9 +2,9 @@
   "name": "m2-api-non-mandatory",
   "version": "1.0.0",
   "description": "",
-  "main": "M2A1/server.js",
+  "main": "server.js",
   "scripts": {
-      "start":"node M2A1/server.js",
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Eirik Urdal",
