@@ -10,27 +10,46 @@ app.use(bodyParser.json());
 
 //------------------------------
 
-const userNames = [];
+const users = [];
 
-app.post('/api/user', function(req, res, next){
-    
-    let userName = req.body.userName;
-    
-    let isUnique = ! isNameInList(userNames, userName);
-    
-    if(isUnique && userName){
-        userNames.push(userName);
-        res.status(200).json(userNames).end();
-    } else{
-        res.status(400).json(userNames).end();
+let loginUserId;
+
+app.post('/api/user', function (req, res, next) {
+
+    let userMail = req.body.userMail;
+
+    let isUnique = !isMailInList(users, userMail);
+
+    if (isUnique && userMail) {
+        req.body.id = users.length + 1;
+        users.push(req.body);
+        res.status(200).json(users).end();
+    } else {
+        res.status(400).json(users).end();
     }
 });
 
-function isNameInList(list,name){
-    let searchName = name.toLowerCase();
+app.post('/api/login', function (req, res, next) {
+
+    let loginUserMail = req.body.loginUserMail;
+    let loginUserPassword = req.body.loginUserPassword;
+
+    let userExists = isUserInList(users, loginUserMail, loginUserPassword);
+
+    if (userExists && loginUserMail && loginUserPassword) {
+        res.status(200).json({userName:users[loginUserId-1].userName}).end();
+    } else {
+        res.status(404).end();
+    }
+});
+
+// users[loginUserId-1].userName
+
+function isMailInList(list, mail) {
+    let searchMail = mail.toString().toLowerCase();
     let result = false;
-    for(let user in list){
-        if(list[user].toLowerCase() === searchName){
+    for (let user in list) {
+        if (list[user].userMail.toLowerCase() === searchMail) {
             result = true;
             break;
         }
@@ -38,17 +57,25 @@ function isNameInList(list,name){
     return result;
 }
 
+function isUserInList(list, mail, password){
+    let searchMail = mail.toString().toLowerCase();
+    let searchPassword = password.toString().toLowerCase();
+    let result = false;
+    for (let user in list) {
+        if (list[user].userMail.toLowerCase() === searchMail) {
+            if (list[user].userPassword.toLowerCase() === searchPassword) {
+                loginUserId = list[user].id;
+                result = true;
+                break;
+            }
+        }
+    }
+    return result;
+}
 
-
-/*
-user.id = users.length +1;
-    users.push(user);
-    
-    res.json(user).end();
-*/
 
 //----------------------------------
-    
-    app.listen(app.get('port'), function() {
+
+app.listen(app.get('port'), function () {
     console.log('server running', app.get('port'));
 })

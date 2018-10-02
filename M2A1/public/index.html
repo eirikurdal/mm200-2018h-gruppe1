@@ -89,8 +89,8 @@
                 loginUserPassword: loginUserPassword
             };
 
-            sendAndRecieveLoginInfo(loginUser).then(userName => {
-                    greetUser(userName); 
+            sendAndRecieveLoginInfo(loginUser).then(user => {
+                    greetUser(user.userName); 
             }).catch(err =>{
                  errorLoggingIn();
             });
