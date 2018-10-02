@@ -19,7 +19,7 @@ app.post('/api/user', function(req, res, next){
     let isUnique = ! isNameInList(userNames, userName);
     
     if(isUnique && userName){
-        userNames.push(req.body.userName);
+        userNames.push(userName);
         res.status(200).json(userNames).end();
     } else{
         res.status(400).json(userNames).end();
