@@ -12,9 +12,10 @@ app.use(bodyParser.json());
 
 const users = [];
 
+let loginUserId;
+
 app.post('/api/user', function (req, res, next) {
 
-    //let userName = req.body.userName;
     let userMail = req.body.userMail;
 
     let isUnique = !isMailInList(users, userMail);
@@ -28,6 +29,22 @@ app.post('/api/user', function (req, res, next) {
     }
 });
 
+app.post('/api/login', function (req, res, next) {
+
+    let loginUserMail = req.body.loginUserMail;
+    let loginUserPassword = req.body.loginUserPassword;
+
+    let userExists = isUserInList(users, loginUserMail, loginUserPassword);
+
+    if (userExists && loginUserMail && loginUserPassword) {
+        res.status(200).json(users[loginUserId-1].userName).end();
+    } else {
+        res.status(404).end();
+    }
+});
+
+// users[loginUserId-1].userName
+
 function isMailInList(list, mail) {
     let searchMail = mail.toString().toLowerCase();
     let result = false;
@@ -40,13 +57,22 @@ function isMailInList(list, mail) {
     return result;
 }
 
+function isUserInList(list, mail, password){
+    let searchMail = mail.toString().toLowerCase();
+    let searchPassword = password.toString().toLowerCase();
+    let result = false;
+    for (let user in list) {
+        if (list[user].userMail.toLowerCase() === searchMail) {
+            if (list[user].userPassword.toLowerCase() === searchPassword) {
+                loginUserId = list[user].id;
+                result = true;
+                break;
+            }
+        }
+    }
+    return result;
+}
 
-/*
-user.id = users.length +1;
-    users.push(user);
-    
-    res.json(user).end();
-*/
 
 //----------------------------------
 
