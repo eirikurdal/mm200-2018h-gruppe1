@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+//const db = require("./js/db.js");
+//const user = require("./js/user.js");
 
 const app = express();
 const port = (process.env.PORT || 8080);
@@ -7,6 +9,7 @@ const port = (process.env.PORT || 8080);
 app.set('port', port);
 app.use(express.static('public'));
 app.use(bodyParser.json());
+//app.use(user);
 
 //------------------------------
 
@@ -37,7 +40,9 @@ app.post('/api/login', function (req, res, next) {
     let userExists = isUserInList(users, loginUserMail, loginUserPassword);
 
     if (userExists && loginUserMail && loginUserPassword) {
-        res.status(200).json({userName:users[loginUserId-1].userName}).end();
+        res.status(200).json({
+            userName: users[loginUserId - 1].userName
+        }).end();
     } else {
         res.status(404).end();
     }
@@ -57,7 +62,7 @@ function isMailInList(list, mail) {
     return result;
 }
 
-function isUserInList(list, mail, password){
+function isUserInList(list, mail, password) {
     let searchMail = mail.toString().toLowerCase();
     let searchPassword = password.toString().toLowerCase();
     let result = false;
