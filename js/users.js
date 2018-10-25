@@ -49,9 +49,11 @@ router.post("/register/", async function (req, res) {
     let password = req.body.password;
     console.log(req.body);
 
-    let userExists = checkIfUserExists(email);
+    let userExists = await checkIfUserExists(email);
     
-    if(userExists == false) {
+    console.log(userExists);
+    
+    if(userExists === false) {
         let hashPassword = bcrypt.hashSync(password, 10);
         console.log(hashPassword);
 
@@ -60,7 +62,9 @@ router.post("/register/", async function (req, res) {
         try {
             let statusCode = await db.any(query) ? 200 : 500;
             console.log("Status: " + statusCode);
-            res.status(statusCode).json({}).end()
+            res.status(statusCode).json({
+                msg: `Velkommen som bruker, ${username}`
+            }).end()
 
         } catch (error) {
             res.status(500).json({
