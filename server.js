@@ -11,7 +11,7 @@ app.set('port', port);
 app.use(express.static('public'));
 app.use(bodyParser.json());
 
-app.use('/todolist/users/', users);
+app.use('/users/', users);
 
 //------------------------------
 

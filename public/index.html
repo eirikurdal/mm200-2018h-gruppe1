@@ -37,6 +37,10 @@
         <button id="btnLogin">Logg inn</button>
     </div>
 
+    <div>
+        <button id="btnDelete">Slett bruker</button>
+    </div>
+
     <script>
         // HTML-ELEMENTS ----------------
         let btnCreate = document.getElementById('btnCreate');
@@ -44,11 +48,16 @@
         let btnLogin = document.getElementById("btnLogin");
         btnLogin.onclick = login;
 
+        let btnDelete = document.getElementById("btnDelete");
+        btnDelete.onclick = deleteUser;
+
 
         //------------------------------------------------------------------------
         // Endpoints -------------------------------------------------------------
-        const ADD_NEW_USER_ENDPOINT = '/todolist/users/register'; //'/api/user';
-        const LOGIN_ENDPOINT = '/todolist/users/login';
+        const ADD_NEW_USER_ENDPOINT = '/users/register'; //'/api/user';
+        const DELETE_USER_ENDPOINT = '/users/delete';
+        const LOGIN_ENDPOINT = '/users/login';
+
         //const GET_USER_ENDPOINT = '/app/users';
 
         // ADD new user elements --------
@@ -60,7 +69,7 @@
         const INPUT_LOGIN_EMAIL = "loginEmail";
         const INPUT_LOGIN_PASSWORD = "loginPassword";
 
-        
+
         //------------------------------------------------------------------------
         // FUNCTIONS -------------------------------------------------------------
 
@@ -82,7 +91,7 @@
                 };
 
                 sendAndRecieveUsernameDB(user).then(response => {
-                    if(response.status !== 200) {
+                    if (response.status !== 200) {
                         window.alert(response.msg);
                     }
                 });
@@ -183,6 +192,42 @@
 
         function errorLoggingIn() {
             window.alert("Brukernavn eller passord er galt. Logg inn på nytt");
+        }
+
+        // Delete user -----------
+
+        function deleteUser() {
+            let id = 20;
+
+            sendAndRecieveDeleteInfo({
+                id: id
+            }).then(response => {
+                window.alert(response.msg);
+            }).catch(error => {
+                window.alert(error);
+            });
+        }
+
+        function sendAndRecieveDeleteInfo(id) {
+            return fetch(DELETE_USER_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(id)
+            }).then(data => {
+
+                if (data.status === 200) {
+                    return data.json();
+                } else if (data.status === 400) {
+                    return Promise.reject(new Error(data.status + ', Noe gikk galt!'));
+                } else if (data.status === 404) {
+                    return Promise.reject(new Error(data.status + ', Brukeren du vil slette eksisterer ikke.'));
+                } else {
+                    return Promise.reject(new Error(data.status + ', fail'));
+                }
+            });
         }
 
     </script>
