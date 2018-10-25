@@ -8,87 +8,87 @@
 </head>
 
 <body>
-    <div id="createNewUserContainer">
+    <div id="newUserContainer">
         <h1>Ny bruker</h1>
-        <label for="newUserName">Brukernavn:</label>
-        <input id="newUserName" type="text">
+        <label for="newUsername">Brukernavn:</label>
+        <input id="newUsername" type="text">
         <br>
 
-        <label for="userMail">E-post:</label>
-        <input id="userMail" type="text">
+        <label for="newEmail">E-post:</label>
+        <input id="newEmail" type="text">
         <br>
 
-        <label for="userPassword">Passord:</label>
-        <input id="userPassword" type="text">
+        <label for="newPassword">Passord:</label>
+        <input id="newPassword" type="text">
         <br>
 
         <button id="btnCreate">Lag ny bruker</button>
     </div>
-    <div id="logInContainer">
+    <div id="loginContainer">
         <h1>Logg inn</h1>
-        <label for="loginUserMail">E-post:</label>
-        <input id="loginUserMail" type="text">
+        <label for="loginEmail">E-post:</label>
+        <input id="loginEmail" type="text">
         <br>
 
-        <label for="loginUserPassword">Passord:</label>
-        <input id="loginUserPassword" type="text">
+        <label for="loginPasswod">Passord:</label>
+        <input id="loginPassword" type="text">
         <br>
 
-        <button id="btnLogIn">Logg inn</button>
+        <button id="btnLogin">Logg inn</button>
     </div>
-    <ol id="userList"></ol>
-
 
     <script>
         // HTML-ELEMENTS ----------------
         let btnCreate = document.getElementById('btnCreate');
         btnCreate.onclick = addNewUser;
-        let btnLogIn = document.getElementById("btnLogIn");
-        btnLogIn.onclick = logIn;
+        let btnLogin = document.getElementById("btnLogin");
+        btnLogin.onclick = login;
 
 
-
-        // Endpoints ----------------------
-        const ADD_USER_ENDPOINT = '/api/user';
-        const ADD_LOGIN_ENDPOINT = '/api/login';
+        //------------------------------------------------------------------------
+        // Endpoints -------------------------------------------------------------
+        const ADD_NEW_USER_ENDPOINT = '/todolist/users/register'; //'/api/user';
+        const LOGIN_ENDPOINT = '/todolist/users/login';
         //const GET_USER_ENDPOINT = '/app/users';
 
         // ADD new user elements --------
-        const INPUT_NAME_ELEMENT = "newUserName";
-        const INPUT_MAIL_ELEMENT = "userMail";
-        const INPUT_PASSWORD_ELEMENT = "userPassword";
+        const INPUT_NEW_USERNAME = "newUsername";
+        const INPUT_NEW_EMAIL = "newEmail";
+        const INPUT_NEW_PASSWORD = "newPassword";
 
         // LOGIN elements ----------------------
-        const INPUT_LOGIN_MAIL_ELEMENT = "loginUserMail";
-        const INPUT_LOGIN_PASSWORD_ELEMENT = "loginUserPassword";
-        const NAMES_LIST_ELEMENT = "userList";
+        const INPUT_LOGIN_EMAIL = "loginEmail";
+        const INPUT_LOGIN_PASSWORD = "loginPassword";
 
+        
+        //------------------------------------------------------------------------
+        // FUNCTIONS -------------------------------------------------------------
 
-
-        // FUNCTIONS ------------------------
+        // Add new user ----------------
         function addNewUser() {
 
-            let userName = document.getElementById(INPUT_NAME_ELEMENT).value;
-            let userMail = document.getElementById(INPUT_MAIL_ELEMENT).value;
-            let userPassword = document.getElementById(INPUT_PASSWORD_ELEMENT).value;
+            let username = document.getElementById(INPUT_NEW_USERNAME).value;
+            let email = document.getElementById(INPUT_NEW_EMAIL).value;
+            let password = document.getElementById(INPUT_NEW_PASSWORD).value;
 
-            let fieldsOK = isAllFieldsOK(userName, userMail, userPassword);
+            let fieldsOK = isAllFieldsOK(username, email, password);
 
             if (fieldsOK === true) {
 
-                ///TODO: Endre til SQL-query. Insert
-
                 let user = {
-                    userName: userName,
-                    userMail: userMail,
-                    userPassword: userPassword
+                    username: username,
+                    email: email,
+                    password: password
                 };
 
-                sendAndRecieveUserName(user);
-
+                sendAndRecieveUsernameDB(user).then(response => {
+                    if(response.status !== 200) {
+                        window.alert(response.msg);
+                    }
+                });
             }
         }
-        
+
         function isAllFieldsOK(name, mail, password) {
 
             let fieldStatus = false;
@@ -127,10 +127,9 @@
             return fieldStatus;
         }
 
-        function sendAndRecieveUserName(user) {
+        function sendAndRecieveUsernameDB(user) {
 
-            ///TODO: Sjekke ut. Skal SQL-spørringen inn her?
-            return fetch(ADD_USER_ENDPOINT, {
+            return fetch(ADD_NEW_USER_ENDPOINT, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
@@ -139,36 +138,35 @@
                 body: JSON.stringify(user)
             }).then(data => {
                 return data.json();
-
             });
         }
 
-        function logIn() {
-            let loginUserMail = document.getElementById(INPUT_LOGIN_MAIL_ELEMENT).value;
-            let loginUserPassword = document.getElementById(INPUT_LOGIN_PASSWORD_ELEMENT).value;
+        // Log in ----------------------
 
-            ///TODO: Lage SQL-spørring.
-            let loginUser = {
-                
-                loginUserMail: loginUserMail,
-                loginUserPassword: loginUserPassword
+        function login() {
+            let email = document.getElementById(INPUT_LOGIN_EMAIL).value;
+            let password = document.getElementById(INPUT_LOGIN_PASSWORD).value;
+
+            let user = {
+                email: email,
+                password: password
             };
 
-            sendAndRecieveLoginInfo(loginUser).then(user => {
-                greetUser(user.userName);
+            sendAndRecieveLoginInfo(user).then(user => {
+                greetUser(user.username);
             }).catch(err => {
                 errorLoggingIn();
             });
         }
 
-        function sendAndRecieveLoginInfo(loginUser) {
-            return fetch(ADD_LOGIN_ENDPOINT, {
+        function sendAndRecieveLoginInfo(user) {
+            return fetch(LOGIN_ENDPOINT, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify(loginUser)
+                body: JSON.stringify(user)
             }).then(data => {
 
                 if (data.status === 200) {
@@ -187,7 +185,6 @@
             window.alert("Brukernavn eller passord er galt. Logg inn på nytt");
         }
 
-        
     </script>
 </body>
 

@@ -18,18 +18,14 @@ div {
     align-content: center;
 }
 
-#createNewUserContainer {
+#newUserContainer {
     background: lightgreen;
     height: 60vh;
 }
 
-#logInContainer {
+#loginContainer {
     background: #9bd85e;
     height: 40vh;
-}
-
-#userList {
-    
 }
 
 .redBorder {
