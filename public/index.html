@@ -10,31 +10,35 @@
 <body>
     <div id="newUserContainer">
         <h1>Ny bruker</h1>
-        <label for="newUsername">Brukernavn:</label>
-        <input id="newUsername" type="text">
-        <br>
+        <form id="newUserForm">
+            <label for="newUsername">Brukernavn:</label>
+            <input id="newUsername" type="text" required>
+            <br>
 
-        <label for="newEmail">E-post:</label>
-        <input id="newEmail" type="text">
-        <br>
+            <label for="newEmail">E-post:</label>
+            <input id="newEmail" type="email" required>
+            <br>
 
-        <label for="newPassword">Passord:</label>
-        <input id="newPassword" type="text">
-        <br>
+            <label for="newPassword">Passord:</label>
+            <input id="newPassword" type="password" required>
+            <br>
 
-        <button id="btnCreate">Lag ny bruker</button>
+            <button id="btnCreate">Lag ny bruker</button>
+        </form>
     </div>
     <div id="loginContainer">
         <h1>Logg inn</h1>
-        <label for="loginEmail">E-post:</label>
-        <input id="loginEmail" type="text">
-        <br>
+        <form id="loginForm">
+            <label for="loginEmail">E-post:</label>
+            <input id="loginEmail" type="email" required>
+            <br>
 
-        <label for="loginPasswod">Passord:</label>
-        <input id="loginPassword" type="text">
-        <br>
+            <label for="loginPasswod">Passord:</label>
+            <input id="loginPassword" type="password" required>
+            <br>
 
-        <button id="btnLogin">Logg inn</button>
+            <button id="btnLogin">Logg inn</button>
+        </form>
     </div>
 
     <div>
@@ -43,13 +47,15 @@
 
     <script>
         // HTML-ELEMENTS ----------------
-        let btnCreate = document.getElementById('btnCreate');
-        btnCreate.onclick = addNewUser;
-        let btnLogin = document.getElementById("btnLogin");
-        btnLogin.onclick = login;
-
         let btnDelete = document.getElementById("btnDelete");
         btnDelete.onclick = deleteUser;
+        
+        let newUserForm = document.getElementById("newUserForm");
+        newUserForm.onsubmit = addNewUser;
+        
+        let loginForm = document.getElementById("loginForm");
+        loginForm.onsubmit = login;
+
 
 
         //------------------------------------------------------------------------
@@ -74,8 +80,8 @@
         // FUNCTIONS -------------------------------------------------------------
 
         // Add new user ----------------
-        function addNewUser() {
-
+        function addNewUser(evt) {
+            evt.preventDefault();
             let username = document.getElementById(INPUT_NEW_USERNAME).value;
             let email = document.getElementById(INPUT_NEW_EMAIL).value;
             let password = document.getElementById(INPUT_NEW_PASSWORD).value;
@@ -152,7 +158,8 @@
 
         // Log in ----------------------
 
-        function login() {
+        function login(evt) {
+            evt.preventDefault();
             let email = document.getElementById(INPUT_LOGIN_EMAIL).value;
             let password = document.getElementById(INPUT_LOGIN_PASSWORD).value;
 
@@ -162,7 +169,8 @@
             };
 
             sendAndRecieveLoginInfo(user).then(user => {
-                greetUser(user.username);
+                localStorage.setItem("id", user.id);
+                greetUser(user.username + ", din id er: " + user.id);
             }).catch(err => {
                 errorLoggingIn();
             });
@@ -186,8 +194,8 @@
             });
         }
 
-        function greetUser(userName) {
-            window.alert("Hello " + userName + "!");
+        function greetUser(message) {
+            window.alert(message);
         }
 
         function errorLoggingIn() {
@@ -197,12 +205,13 @@
         // Delete user -----------
 
         function deleteUser() {
-            let id = 20;
-
+            ///TODO: Endre id til token. man skal være logget inn med en token.
+            let id = localStorage.getItem("id");
             sendAndRecieveDeleteInfo({
                 id: id
             }).then(response => {
                 window.alert(response.msg);
+                localStorage.removeItem("id");
             }).catch(error => {
                 window.alert(error);
             });

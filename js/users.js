@@ -21,7 +21,8 @@ router.post("/login/", async function (req, res) {
             if (passwordMatch) {
                 res.status(200).json({
                     msg: "Hello, " + datarows[0].username,
-                    username: datarows[0].username
+                    username: datarows[0].username,
+                    id: datarows[0].id
                 });
             } else {
                 res.status(401).json({
