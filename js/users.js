@@ -21,7 +21,7 @@ router.post("/login/", async function (req, res) {
             let passwordMatch = bcrypt.compareSync(password, datarows[0].hashpassword);
             if (passwordMatch) {
                 let token = bcrypt.hashSync(datarows[0].id + secret, 10);
-                            
+
                 res.status(200).json({
                     msg: "Hello, " + datarows[0].username,
                     username: datarows[0].username,
@@ -79,16 +79,16 @@ router.post("/register/", async function (req, res) {
 });
 
 router.post("/delete/", async function (req, res) {
-    let id = req.body.id;
-    
+    let userId = req.get("userId");
+
     try {
         await authenticateUser(req);
 
-        
-        let updateQuery = `UPDATE "public"."users" SET "activated"='false' WHERE "id"=${id} AND "activated"='true' RETURNING "id", "username", "email", "hashpassword", "role", "activated";`;
+
+        let updateQuery = `UPDATE "public"."users" SET "activated"='false' WHERE "id"=${userId} AND "activated"='true' RETURNING "id", "username", "email", "hashpassword", "role", "activated";`;
         let updateRow = await db.any(updateQuery);
         if (updateRow.length > 0) {
-            let checkQuery = `SELECT * FROM public."users" WHERE id = '${id}'`;
+            let checkQuery = `SELECT * FROM public."users" WHERE id = '${userId}'`;
             let datarows = await db.any(checkQuery);
             let activated = datarows[0].activated;
             if (activated == 'false') {
@@ -165,18 +165,18 @@ async function checkIfUserExists(email) {
     }
 }
 
-function authenticateUser(req){
-    let id = req.body.id;
+function authenticateUser(req) {
+    let userId = req.get("userId");
     let clientToken = req.get("Auth");
-    let tokenOK = bcrypt.compareSync(id + secret, clientToken);   
-    if(tokenOK == true){
+    let tokenOK = bcrypt.compareSync(userId + secret, clientToken);
+    if (tokenOK == true) {
         console.log("Token er ok!");
         return;
     } else {
         console.log("Token er ikke ok!");
-        throw('User not authenticated');
+        throw ('User not authenticated');
     }
-    
+
 }
 
 module.exports = router;

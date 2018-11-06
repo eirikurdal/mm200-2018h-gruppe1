@@ -165,11 +165,10 @@
         // Delete user -----------
 
         function deleteUser() {
-            ///TODO: Endre id til token. man skal være logget inn med en token.
-            let id = localStorage.getItem("id");
+            let userId = localStorage.getItem("id");
             let token = localStorage.getItem("token");
 
-            sendAndRecieveDeleteInfo({id:id}, token).then(response => {
+            sendAndRecieveDeleteInfo(userId, token).then(response => {
                 window.alert(response.msg);
                 localStorage.removeItem("id");
                 localStorage.removeItem("token");
@@ -179,15 +178,15 @@
             });
         }
 
-        function sendAndRecieveDeleteInfo(id, token) {
+        function sendAndRecieveDeleteInfo(userId, token) {
             return fetch(DELETE_USER_ENDPOINT, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
                     'Accept': 'application/json',
-                    'Auth': token
-                },
-                body: JSON.stringify(id)
+                    'Auth': token,
+                    'userId': userId
+                }
             }).then(data => {
 
                 if (data.status === 200) {
@@ -201,7 +200,6 @@
                 }
             });
         }
-
     </script>
 </body>
 

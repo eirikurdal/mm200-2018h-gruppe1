@@ -8,197 +8,123 @@
 </head>
 
 <body>
-    <div id="newUserContainer">
-        <h1>LISTEVISNING</h1>
-        <form id="newUserForm">
-            <label for="newUsername">Brukernavn:</label>
-            <input id="newUsername" type="text" required>
+    <div id="createListContainer">
+        <h1>Create New List</h1>
+        <form id="newListForm">
+            <label for="listTitle">Tittel:</label>
+            <input id="listTitle" type="text" required>
             <br>
 
-            <label for="newEmail">E-post:</label>
-            <input id="newEmail" type="email" required>
-            <br>
-
-            <label for="newPassword">Passord:</label>
-            <input id="newPassword" type="password" required>
-            <br>
-
-            <button id="btnCreate">Lag ny bruker</button>
+            <button id="btnCreateList">Lag liste</button>
         </form>
     </div>
-    <div id="loginContainer">
-        <h1>LISTEVISNING</h1>
-        <form id="loginForm">
-            <label for="loginEmail">E-post:</label>
-            <input id="loginEmail" type="email" required>
-            <br>
-
-            <label for="loginPasswod">Passord:</label>
-            <input id="loginPassword" type="password" required>
-            <br>
-
-            <button id="btnLogin">Logg inn</button>
-        </form>
+    <div id="listContainer">
     </div>
-
-    <div>
-        <button id="btnDelete">Slett bruker</button>
-    </div>
-
     <script>
         // HTML-ELEMENTS ----------------
-        let btnDelete = document.getElementById("btnDelete");
-        btnDelete.onclick = deleteUser;
+        let newListForm = document.getElementById("newListForm");
+        newListForm.onsubmit = createList;
 
-        let newUserForm = document.getElementById("newUserForm");
-        newUserForm.onsubmit = addNewUser;
+        let listContainer = document.getElementById("listContainer");
 
-        let loginForm = document.getElementById("loginForm");
-        loginForm.onsubmit = login;
-
-
-
-        //--------------------------------------------------------
         // Endpoints ---------------------------------------------
-        const ADD_NEW_USER_ENDPOINT = '/users/register'; //'/api/user';
-        const DELETE_USER_ENDPOINT = '/users/delete';
-        const LOGIN_ENDPOINT = '/users/login';
+        const ADD_NEW_LIST_ENDPOINT = '/lists/add';
+        const GET_ALL_LISTS_ENDPOINT = '/lists/get';
+        const DELETE_LIST_ENDPOINT = '/lists/delete';
 
-        //const GET_USER_ENDPOINT = '/app/users';
+        // ADD new list elements --------
+        const INPUT_LIST_TITLE = "listTitle";
 
-        // ADD new user elements --------
-        const INPUT_NEW_USERNAME = "newUsername";
-        const INPUT_NEW_EMAIL = "newEmail";
-        const INPUT_NEW_PASSWORD = "newPassword";
-
-        // LOGIN elements ----------------------
-        const INPUT_LOGIN_EMAIL = "loginEmail";
-        const INPUT_LOGIN_PASSWORD = "loginPassword";
+        // OUTPUT elements ----------------------
+        const OUTPUT_LIST_CONTAINER = "listContainer";
 
 
         //---------------------------------------------------------
         // FUNCTIONS ----------------------------------------------
+        //---------------------------------------------------------
 
-        // Add new user ----------------
-        function addNewUser(evt) {
+
+        // Add new list ----------------
+        function createList(evt) {
             evt.preventDefault();
-            let username = document.getElementById(INPUT_NEW_USERNAME).value;
-            let email = document.getElementById(INPUT_NEW_EMAIL).value;
-            let password = document.getElementById(INPUT_NEW_PASSWORD).value;
 
-            let user = {
-                username: username,
-                email: email,
-                password: password
+            let userId = localStorage.getItem("id");
+            let token = localStorage.getItem("token");
+
+            let listTitle = document.getElementById(INPUT_LIST_TITLE).value;
+
+            let list = {
+                listTitle: listTitle
             };
 
-            sendAndRecieveUsernameDB(user).then(response => {
+            sendListToDB(list, userId, token).then(response => {
                 if (response.status !== 200) {
                     window.alert(response.msg);
+                    showLists();
                 }
             });
 
         }
 
+        function sendListToDB(list, userId, token) {
 
-        function sendAndRecieveUsernameDB(user) {
-
-            return fetch(ADD_NEW_USER_ENDPOINT, {
+            return fetch(ADD_NEW_LIST_ENDPOINT, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Auth': token,
+                    'UserId': userId
                 },
-                body: JSON.stringify(user)
+                body: JSON.stringify(list)
             }).then(data => {
                 return data.json();
             });
         }
 
-        // Log in ----------------------
+        // Show all lists ----------------------
+        function showLists() {
 
-        function login(evt) {
-            evt.preventDefault();
-            let email = document.getElementById(INPUT_LOGIN_EMAIL).value;
-            let password = document.getElementById(INPUT_LOGIN_PASSWORD).value;
+            let userId = localStorage.getItem("id");
+            let token = localStorage.getItem("token");
 
-            let user = {
-                email: email,
-                password: password
-            };
+            getAllListsFromDB(userId, token).then(response => {
+                if (response.status !== 200) {
+                    let lists = response.lists;
+                    console.log(lists);
 
-            sendAndRecieveLoginInfo(user).then(user => {
-                localStorage.setItem("token", user.token);
-                localStorage.setItem("id", user.id);
-                greetUser(user.msg);
-            }).catch(err => {
-                errorLoggingIn();
-            });
-        }
+                    let listContainer = document.getElementById("listContainer");
+                    listContainer.innerHTML = "";
 
-        function sendAndRecieveLoginInfo(user) {
-            return fetch(LOGIN_ENDPOINT, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json; charset=utf-8',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(user)
-            }).then(data => {
+                    for (let i = 0; i < lists.length; i++) {
+                        let html = "";
+                        html += `<div>`;
+                        html += `<h3>${lists[i].title}</h3>`
+                        html += `</div>`;
 
-                if (data.status === 200) {
-                    return data.json();
-                } else {
-                    return Promise.reject(new Error('fail'));
+                        listContainer.innerHTML += html;
+
+                    }
                 }
             });
+
         }
 
-        function greetUser(message) {
-            window.alert(message);
-        }
 
-        function errorLoggingIn() {
-            window.alert("Brukernavn eller passord er galt. Logg inn på nytt");
-        }
+        function getAllListsFromDB(userId, token) {
 
-        // Delete user -----------
-
-        function deleteUser() {
-            ///TODO: Endre id til token. man skal være logget inn med en token.
-            let id = localStorage.getItem("id");
-            sendAndRecieveDeleteInfo({
-                id: id
-            }).then(response => {
-                window.alert(response.msg);
-                localStorage.removeItem("id");
-            }).catch(error => {
-                window.alert(error);
-            });
-        }
-
-        function sendAndRecieveDeleteInfo(id) {
-            return fetch(DELETE_USER_ENDPOINT, {
-                method: "POST",
+            return fetch(GET_ALL_LISTS_ENDPOINT, {
+                method: "GET",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Auth': token,
+                    'UserId': userId
                 },
-                body: JSON.stringify(id)
             }).then(data => {
-
-                if (data.status === 200) {
-                    return data.json();
-                } else if (data.status === 400) {
-                    return Promise.reject(new Error(data.status + ', Noe gikk galt!'));
-                } else if (data.status === 404) {
-                    return Promise.reject(new Error(data.status + ', Brukeren du vil slette eksisterer ikke.'));
-                } else {
-                    return Promise.reject(new Error(data.status + ', fail'));
-                }
+                return data.json();
             });
         }
-
     </script>
 </body>
 
