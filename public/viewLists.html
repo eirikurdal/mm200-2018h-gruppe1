@@ -9,7 +9,7 @@
 
 <body>
     <div id="newUserContainer">
-        <h1>Ny bruker</h1>
+        <h1>LISTEVISNING</h1>
         <form id="newUserForm">
             <label for="newUsername">Brukernavn:</label>
             <input id="newUsername" type="text" required>
@@ -27,7 +27,7 @@
         </form>
     </div>
     <div id="loginContainer">
-        <h1>Logg inn</h1>
+        <h1>LISTEVISNING</h1>
         <form id="loginForm">
             <label for="loginEmail">E-post:</label>
             <input id="loginEmail" type="email" required>
@@ -107,7 +107,7 @@
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
-                    'Accept': 'application/json',
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(user)
             }).then(data => {
@@ -167,25 +167,22 @@
         function deleteUser() {
             ///TODO: Endre id til token. man skal være logget inn med en token.
             let id = localStorage.getItem("id");
-            let token = localStorage.getItem("token");
-
-            sendAndRecieveDeleteInfo({id:id}, token).then(response => {
+            sendAndRecieveDeleteInfo({
+                id: id
+            }).then(response => {
                 window.alert(response.msg);
                 localStorage.removeItem("id");
-                localStorage.removeItem("token");
-
             }).catch(error => {
                 window.alert(error);
             });
         }
 
-        function sendAndRecieveDeleteInfo(id, token) {
+        function sendAndRecieveDeleteInfo(id) {
             return fetch(DELETE_USER_ENDPOINT, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json; charset=utf-8',
-                    'Accept': 'application/json',
-                    'Auth': token
+                    'Accept': 'application/json'
                 },
                 body: JSON.stringify(id)
             }).then(data => {
