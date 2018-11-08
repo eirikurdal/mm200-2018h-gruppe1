@@ -2,10 +2,10 @@
     position: fixed;
     top: 0;
     left: 0;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.9);
     width: 100%;
     height: 80px;
-    
+    z-index: 1;
 }
 
 .new-list-icon {
@@ -13,11 +13,13 @@
     top: 10px;
     right: 10px;
     font-size: 60px;
-    color: rgba(255,255,255,0.75);
+    color: rgba(100,100,100,1);
+    z-index: 2;
 }
 
 #listContainer {
     margin-top: 90px;
+    z-index: 0;
 }
 
 .list-card {
