@@ -1,0 +1,57 @@
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(255, 255, 255, 0.85);
+    width: 100%;
+    height: 80px;
+    
+}
+
+.new-list-icon {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    font-size: 60px;
+    color: rgba(255,255,255,0.75);
+}
+
+#listContainer {
+    margin-top: 90px;
+}
+
+.list-card {
+    position: relative;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 5px;
+    width: 80vw;
+    margin: 15px auto;
+    padding: 10px;
+    display: block;
+}
+
+.list-card h3 {
+    text-transform: uppercase;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.list-card li {
+    list-style-type: none;
+    font-size: 1rem;
+    padding: 5px;
+    margin: 1px;
+    background: rgba(255, 255, 255, 1);
+}
+
+.list-card .new-list-element {
+    font-size: 1rem;
+    text-align: center;
+    padding: 5px;
+    margin: 1px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background: rgba(200, 200, 200, 0.5);
+    color: rgba(100, 100, 100, 1);
+}

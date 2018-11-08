@@ -2,30 +2,31 @@
 <html>
 
 <head>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
     <meta charset="utf-8">
-    <title>M2A1 objekt</title>
-    <link href="css/styles.css" rel="stylesheet" />
+    <title>Lists</title>
+
+    <!-- My Styles -->
+    <link href="css/styles_simple.css" rel="stylesheet" />
+    <link href="css/styles_lists.css" rel="stylesheet" />
+
+
+    <!-- FONT AWESOME -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 </head>
 
 <body>
-    <div id="createListContainer">
-        <h1>Create New List</h1>
-        <form id="newListForm">
-            <label for="listTitle">Tittel:</label>
-            <input id="listTitle" type="text" required>
-            <br>
-
-            <button id="btnCreateList">Lag liste</button>
-        </form>
+    <div class="header">
+        <i class="fas fa-plus-square new-list-icon" onclick="newListPrompt()"></i>
     </div>
+
     <div id="listContainer">
     </div>
     <script>
         // HTML-ELEMENTS ----------------
-        let newListForm = document.getElementById("newListForm");
-        newListForm.onsubmit = createList;
 
-        let listContainer = document.getElementById("listContainer");
 
         // Endpoints ---------------------------------------------
         const ADD_NEW_LIST_ENDPOINT = '/lists/add';
@@ -43,15 +44,20 @@
         // FUNCTIONS ----------------------------------------------
         //---------------------------------------------------------
 
+        // New list prompt -------------
+
+        function newListPrompt() {
+            let listTitle = prompt("NY LISTE - fyll inn tittel:");
+            createList(listTitle);
+
+        }
+
 
         // Add new list ----------------
-        function createList(evt) {
-            evt.preventDefault();
+        function createList(listTitle) {
 
             let userId = localStorage.getItem("id");
             let token = localStorage.getItem("token");
-
-            let listTitle = document.getElementById(INPUT_LIST_TITLE).value;
 
             let list = {
                 listTitle: listTitle
@@ -96,10 +102,19 @@
                     let listContainer = document.getElementById("listContainer");
                     listContainer.innerHTML = "";
 
+                    let listeelementer = ["Grøt", "Melk", "jalla", "balla", "Snøscooter", "Bål"];
+
                     for (let i = 0; i < lists.length; i++) {
                         let html = "";
-                        html += `<div>`;
-                        html += `<h3>${lists[i].title}</h3>`
+                        html += `<div class="list-card">`;
+                        html += `<h3>${lists[i].title}</h3>`;
+                        html += `<ul>`;
+                        for (let j = 0; j < listeelementer.length; j++) {
+                            html += `<li>${listeelementer[j]}</li>`;
+                        }
+                        html += `</ul>`;
+                        html += `<div class="new-list-element">`;
+                        html += `<i class="fas fa-plus new-list-element-icon"></i>`;
                         html += `</div>`;
 
                         listContainer.innerHTML += html;
@@ -107,7 +122,6 @@
                     }
                 }
             });
-
         }
 
 
@@ -125,6 +139,10 @@
                 return data.json();
             });
         }
+
+        // INIT =================================
+        showLists();
+
     </script>
 </body>
 
