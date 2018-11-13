@@ -5,10 +5,12 @@
     background: rgba(0,0,0,0);
     transition: background 0.5s;
     z-index: 1;
+    display: none;
 }
 
 .menu-overlay.menu-active {
     background: rgba(0,0,0,0.65);
+    display: block;
 }
 
 .menu-container {
@@ -18,7 +20,7 @@
     max-width: 450px;
     margin: 0 auto;
     padding: 20px 5px 5px 5px;
-    top: 80px;
+    top: -100%;
     left: 0;
     right: 0;
     background: rgba(255,255,255,1);
