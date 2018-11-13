@@ -5,9 +5,9 @@ let loggedIn = false;
 // -------
 
 if (loggedIn) {
-    displayMainPage();
+    window.location = "viewLists.html";
 } else {
-    displayNewUser();
+    displayLogin();
 }
 
 function displayNewUser() {
@@ -22,12 +22,6 @@ function displayLogin() {
     let login = createElementFromTemplate("#loginTemplate")
     addElement(login);
     console.log("displaying login");
-}
-
-function displayMainPage() {
-    clearScreen();
-    let mainPage = createElementFromTemplate("#mainPage")
-    addElement(mainPage);
 }
 
 // GENERELLE FUNKSJONER ========

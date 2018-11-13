@@ -20,7 +20,7 @@ const INPUT_LOGIN_PASSWORD = "loginPassword";
 
 // Add new user ==================================
 function addNewUser(evt) {
-    //evt.preventDefault();
+    evt.preventDefault();
     console.log("addNewUser");
     
     let username = document.getElementById(INPUT_NEW_USERNAME).value;
@@ -36,6 +36,7 @@ function addNewUser(evt) {
     sendAndRecieveUsernameDB(user).then(response => {
         if (response.status !== 200) {
             window.alert(response.msg);
+            displayLogin();
         }
     });
 }
@@ -57,7 +58,7 @@ function sendAndRecieveUsernameDB(user) {
 
 // Log in ==================================
 function login(evt) {
-    //evt.preventDefault();
+    evt.preventDefault();
     let email = document.getElementById(INPUT_LOGIN_EMAIL).value;
     let password = document.getElementById(INPUT_LOGIN_PASSWORD).value;
 
@@ -70,6 +71,7 @@ function login(evt) {
         localStorage.setItem("token", user.token);
         localStorage.setItem("id", user.id);
         greetUser(user.msg);
+        window.location = "viewLists.html";
     }).catch(err => {
         errorLoggingIn();
     });
@@ -84,10 +86,11 @@ function sendAndRecieveLoginInfo(user) {
         },
         body: JSON.stringify(user)
     }).then(data => {
-
         if (data.status === 200) {
+            console.log("Status: "+ data.status);
             return data.json();
         } else {
+            console.log("Status: "+ data.status);
             return Promise.reject(new Error('fail'));
         }
     });

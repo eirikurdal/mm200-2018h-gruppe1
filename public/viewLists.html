@@ -4,7 +4,7 @@
 <head>
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
+
     <meta charset="utf-8">
     <title>Lists</title>
 
@@ -25,12 +25,25 @@
     <div id="listContainer">
     </div>
     <script>
+        
+        (function () { // Start point for our litle demo.
+            let token = localStorage.getItem("token");
+            if (token) {
+                
+                
+            } else{
+            window.location = "index.html";
+            }
+        })()
+        
         // HTML-ELEMENTS ----------------
 
 
         // Endpoints ---------------------------------------------
         const ADD_NEW_LIST_ENDPOINT = '/lists/add';
-        const GET_ALL_LISTS_ENDPOINT = '/lists/get';
+        const ADD_NEW_LISTELEMENT_ENDPOINT = '/lists/update';
+        const GET_SINGLE_LIST_ENDPOINT = '/lists/get';
+        const GET_ALL_LISTS_ENDPOINT = '/lists/getall';
         const DELETE_LIST_ENDPOINT = '/lists/delete';
 
         // ADD new list elements --------
@@ -55,7 +68,6 @@
 
         // Add new list ----------------
         function createList(listTitle) {
-
             let userId = localStorage.getItem("id");
             let token = localStorage.getItem("token");
 
@@ -63,7 +75,7 @@
                 listTitle: listTitle
             };
 
-            sendListToDB(list, userId, token).then(response => {
+            sendListToDB(userId, token, list).then(response => {
                 if (response.status !== 200) {
                     window.alert(response.msg);
                     showLists();
@@ -72,7 +84,7 @@
 
         }
 
-        function sendListToDB(list, userId, token) {
+        function sendListToDB(userId, token, list) {
 
             return fetch(ADD_NEW_LIST_ENDPOINT, {
                 method: "POST",
@@ -87,6 +99,46 @@
                 return data.json();
             });
         }
+        
+        // Add list element --------------------
+        
+        async function addListElement(evt){
+            let userId = localStorage.getItem("id");
+            let token = localStorage.getItem("token");
+            let listId = evt.currentTarget.parentNode.id;
+            console.log(listId);
+            
+            let listElement = prompt("Legg til nytt punkt i listen");
+            
+            let currentList = await getSingleListFromDB(userId, token, listId);
+            let listElements = currentList[0].content.listElements;
+            listElements.push(listElement);
+            console.log(listElements);
+            
+            updateListInDB(userId, token, listId, listElements).then(response => {
+                if (response.status !== 200) {
+                    window.alert(response.msg);
+                    showLists();
+                }
+            });
+        }
+        
+        function updateListInDB(userId, token, listId, listElements) {
+
+            return fetch(ADD_NEW_LISTELEMENT_ENDPOINT, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Accept': 'application/json',
+                    'Auth': token,
+                    'UserId': userId,
+                    'ListId': listId
+                },
+                body: JSON.stringify(listElements)
+            }).then(data => {
+                return data.json();
+            });
+        }
 
         // Show all lists ----------------------
         function showLists() {
@@ -97,24 +149,29 @@
             getAllListsFromDB(userId, token).then(response => {
                 if (response.status !== 200) {
                     let lists = response.lists;
+                    lists.reverse();
                     console.log(lists);
 
                     let listContainer = document.getElementById("listContainer");
                     listContainer.innerHTML = "";
 
-                    let listeelementer = ["Grøt", "Melk", "jalla", "balla", "Snøscooter", "Bål"];
-
                     for (let i = 0; i < lists.length; i++) {
+                        let listContent = lists[i].content;
+                        let listId = lists[i].id;
                         let html = "";
-                        html += `<div class="list-card">`;
+                        html += `<div id="${listId}" class="list-card">`;
                         html += `<h3>${lists[i].title}</h3>`;
-                        html += `<ul>`;
-                        for (let j = 0; j < listeelementer.length; j++) {
-                            html += `<li>${listeelementer[j]}</li>`;
+                        if (listContent) {
+                            let listElements = listContent.listElements;
+                            html += `<ul>`;
+                            for (let j = 0; j < listElements.length; j++) {
+                                html += `<li>${listElements[j]}</li>`;
+                            }
+                            html += `</ul>`;
                         }
-                        html += `</ul>`;
-                        html += `<div class="new-list-element">`;
+                        html += `<div class="new-list-element" onclick="addListElement(event)">`;
                         html += `<i class="fas fa-plus new-list-element-icon"></i>`;
+                        html += `</div>`;
                         html += `</div>`;
 
                         listContainer.innerHTML += html;
@@ -123,7 +180,6 @@
                 }
             });
         }
-
 
         function getAllListsFromDB(userId, token) {
 
@@ -139,7 +195,25 @@
                 return data.json();
             });
         }
+        
+        function getSingleListFromDB(userId, token, listId) {
 
+            return fetch(GET_SINGLE_LIST_ENDPOINT, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Accept': 'application/json',
+                    'Auth': token,
+                    'UserId': userId,
+                    'listId': listId
+                },
+            }).then(data => {
+                return data.json();
+            });
+        }
+
+        
+        
         // INIT =================================
         showLists();
 

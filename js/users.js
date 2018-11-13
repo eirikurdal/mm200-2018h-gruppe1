@@ -3,9 +3,9 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 const db = require('./dbconnect').db; //database
 const bcrypt = require('bcryptjs');
+const utilities = require("./utilities.js");
 
 const secret = "Lyngdal";
-
 
 // ---------------------------
 
@@ -17,8 +17,10 @@ router.post("/login/", async function (req, res) {
     try {
         let datarows = await db.any(query);
         let mailMatch = datarows.length == 1 ? true : false;
+        
         if (mailMatch == true) {
             let passwordMatch = bcrypt.compareSync(password, datarows[0].hashpassword);
+
             if (passwordMatch) {
                 let token = bcrypt.hashSync(datarows[0].id + secret, 10);
 
@@ -82,7 +84,7 @@ router.post("/delete/", async function (req, res) {
     let userId = req.get("userId");
 
     try {
-        await authenticateUser(req);
+        await utilities.authenticateUser(req);
 
 
         let updateQuery = `UPDATE "public"."users" SET "activated"='false' WHERE "id"=${userId} AND "activated"='true' RETURNING "id", "username", "email", "hashpassword", "role", "activated";`;
@@ -112,7 +114,6 @@ router.post("/delete/", async function (req, res) {
         });
     }
 });
-
 
 router.post("/changepassword/", async function (req, res) {
     let email = req.body.email;
@@ -163,20 +164,6 @@ async function checkIfUserExists(email) {
         console.log("Bruker finnes ikke fra før. Registrering fortsetter");
         return false;
     }
-}
-
-function authenticateUser(req) {
-    let userId = req.get("userId");
-    let clientToken = req.get("Auth");
-    let tokenOK = bcrypt.compareSync(userId + secret, clientToken);
-    if (tokenOK == true) {
-        console.log("Token er ok!");
-        return;
-    } else {
-        console.log("Token er ikke ok!");
-        throw ('User not authenticated');
-    }
-
 }
 
 module.exports = router;

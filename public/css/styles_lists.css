@@ -27,7 +27,8 @@
     text-align: left;
     background: rgba(255, 255, 255, 0.85);
     border-radius: 5px;
-    width: 80vw;
+    width: 90vw;
+    max-width: 500px;
     margin: 15px auto;
     padding: 10px;
     display: block;
