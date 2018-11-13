@@ -114,6 +114,7 @@ function deleteUser() {
         window.alert(response.msg);
         localStorage.removeItem("id");
         localStorage.removeItem("token");
+        window.location = "index.html";
 
     }).catch(error => {
         window.alert(error);

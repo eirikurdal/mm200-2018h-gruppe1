@@ -2,13 +2,48 @@
     position: fixed;
     width: 100vw;
     height: 100vh;
-    top: -100%;
     background: rgba(0,0,0,0);
-    transition: background 1s, top 1s;
-    z-index: 0;
+    transition: background 0.5s;
+    z-index: 1;
 }
 
 .menu-overlay.menu-active {
-    top: 0;
     background: rgba(0,0,0,0.65);
+}
+
+.menu-container {
+    position: fixed;
+    display: block;
+    width: 80vw;
+    max-width: 450px;
+    margin: 0 auto;
+    padding: 20px 5px 5px 5px;
+    top: 80px;
+    left: 0;
+    right: 0;
+    background: rgba(255,255,255,1);
+    transition: top 0.5s;
+    z-index: 1;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.menu-container.menu-active {
+    top: 80px;
+}
+
+.menu-btn {
+    display: block;
+    margin: 5px;
+    padding: 10px;
+    border: none;
+    color: white;
+    background: rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+    
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 300;
+    border-radius: 5px;
 }
