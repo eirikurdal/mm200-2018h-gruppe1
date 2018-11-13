@@ -8,11 +8,9 @@ const utilities = require("./utilities.js");
 // ---------------------------
 
 // ADD NEW LIST---------------
-router.post("/add/", async function (req, res) {
+router.post("/add/", utilities.authenticateUser, async function (req, res) {
 
     try {
-        await utilities.authenticateUser(req);
-
         let listTitle = req.body.listTitle;
         let userId = req.get("userId");
 
@@ -33,12 +31,11 @@ router.post("/add/", async function (req, res) {
     }
 });
 
+
 // UPDATE LIST---------------
-router.post("/update/", async function (req, res) {
+router.post("/update/", utilities.authenticateUser, async function (req, res) {
 
     try {
-        await utilities.authenticateUser(req);
-
         let listElements = req.body;
         console.log(listElements);
         let listId = req.get("listId");
@@ -64,14 +61,49 @@ router.post("/update/", async function (req, res) {
 });
 
 
+// DELETE LIST ------------------------
+router.post("/delete/", utilities.authenticateUser, async function (req, res) {
+    try {        
+        let listId = req.get("listId");        
+        let deleteQuery = `UPDATE "public"."lists" SET "activated"='false' WHERE "id"=${listId} AND "activated"='true' RETURNING "id", "title", "activated";`;
+        
+        let deleteRow = await db.any(deleteQuery);
+        
+        console.log(deleteQuery);
+        
+        if (deleteRow.length > 0) {
+            let checkQuery = `SELECT * FROM lists WHERE id = '${listId}'`;
+            let datarows = await db.any(checkQuery);
+            let activated = datarows[0].activated;
+            if (activated == 'false') {
+                res.status(200).json({
+                    msg: "Deleted list " + datarows[0].title
+                }).end();
+            } else {
+                res.status(400).json({
+                    msg: "Noe gikk galt"
+                });
+            }
+        } else {
+            res.status(404).json({
+                msg: "Listen du vil slette eksisterer ikke"
+            });
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            error: error
+        });
+    }
+});
+
+
 // GET ALL LISTS ---------------
-router.get("/getall/", async function (req, res) {
+router.get("/getall/", utilities.authenticateUser, async function (req, res) {
 
     try {
-        await utilities.authenticateUser(req);
-
         let userId = req.get("userId");
-        let query = `SELECT * FROM lists WHERE owner = ${userId} ORDER BY id DESC`;
+        let query = `SELECT * FROM lists WHERE owner = ${userId} AND "activated"='true' ORDER BY id DESC`;
         let datarows = await db.any(query);
 
         let statusCode = datarows ? 200 : 500;
@@ -87,27 +119,13 @@ router.get("/getall/", async function (req, res) {
     }
 });
 
-// DELETE LIST ------------------------
-/*
-router.delete("/delete/", async function (req, res) {
-    try {
-        await utilities.authenticateUser(req);
-        
-        let listId = req.get("listId");
-        let deleteQuery = `UPDATE lists SET activated=false WHERE "id"=${userId} AND "activated"='true' RETURNING "id", "username", "email", "hashpassword", "role", "activated";`;
-        let deleteRow = await db.any(deleteQuery);
-    }
-});*/
-
 
 // GET SINGLE LISTS ---------------
-router.get("/get/", async function (req, res) {
+router.get("/get/", utilities.authenticateUser, async function (req, res) {
 
     try {
-        await utilities.authenticateUser(req);
-
         let listId = req.get("listId");
-        let query = `SELECT * FROM lists WHERE id = ${listId}`;
+        let query = `SELECT * FROM lists WHERE id = ${listId} AND "activated"='true'`;
         let datarow = await db.any(query);
 
         let statusCode = datarow ? 200 : 500;

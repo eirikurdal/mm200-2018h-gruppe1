@@ -8,16 +8,17 @@ const bcrypt = require('bcryptjs');
 const secret = "Lyngdal";
 
 // AUTHENTICATE USER ------------------
-router.authenticateUser = function (req) {
+router.authenticateUser = function (req,res,next) {
     let userId = req.get("userId");
     let clientToken = req.get("Auth");
     let tokenOK = bcrypt.compareSync(userId + secret, clientToken);
     if (tokenOK == true) {
         console.log("Token er ok!");
-        return;
+        next();
+        
     } else {
         console.log("Token er ikke ok!");
-        throw ('User not authenticated');
+        res.status(401).end();
     }
 
 }

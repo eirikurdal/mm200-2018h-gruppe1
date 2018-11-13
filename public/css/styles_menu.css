@@ -1,0 +1,14 @@
+.menu-overlay {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    top: -100%;
+    background: rgba(0,0,0,0);
+    transition: background 1s, top 1s;
+    z-index: 0;
+}
+
+.menu-overlay.menu-active {
+    top: 0;
+    background: rgba(0,0,0,0.65);
+}

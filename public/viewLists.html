@@ -11,6 +11,7 @@
     <!-- My Styles -->
     <link href="css/styles_simple.css" rel="stylesheet" />
     <link href="css/styles_lists.css" rel="stylesheet" />
+    <link href="css/styles_menu.css" rel="stylesheet" />
 
 
     <!-- FONT AWESOME -->
@@ -18,18 +19,43 @@
 </head>
 
 <body>
+    <!-- HEADER -->
     <div class="header">
         <div class="config-container">
-            <i class="fas fa-cog config-icon" onclick=""></i>
+            <i class="fas fa-bars config-icon" onclick="toggleMenu()"></i>
         </div>
+        <img class="header-logo" src="./img/Utdl_logo_v2.png">
         <div class="new-list-container">
             <i class="fas fa-plus-square new-list-icon" onclick="createList()"></i>
         </div>
     </div>
 
+    <!-- MENU -->
+    <div class="menu-overlay">
+        <div class="menu-container">
+            <div class="menu-button">
+                <p>Slett bruker</p>
+            </div>
+            <div class="menu-button">
+                <p>Logg ut</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIST CONTAINER -->
     <div id="listContainer">
     </div>
-    <script src="js/client_lists.js" type="application/javascript"></script>
 </body>
+<script>
+    function toggleMenu() {
+        let menuOverlay = document.querySelector(".menu-overlay");
+        let menuContainer = document.querySelector(".menu-container");
+        menuOverlay.classList.toggle("menu-active");
+        menuContainer.classList.toggle("menu-active");
+    }
+
+</script>
+<script src="js/client_lists.js" type="application/javascript"></script>
+
 
 </html>

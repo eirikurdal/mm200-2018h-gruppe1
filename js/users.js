@@ -80,12 +80,10 @@ router.post("/register/", async function (req, res) {
 
 });
 
-router.post("/delete/", async function (req, res) {
+router.post("/delete/", utilities.authenticateUser, async function (req, res) {
     let userId = req.get("userId");
 
     try {
-        await utilities.authenticateUser(req);
-
         let updateQuery = `UPDATE "public"."users" SET "activated"='false' WHERE "id"=${userId} AND "activated"='true' RETURNING "id", "username", "email", "hashpassword", "role", "activated";`;
         let updateRow = await db.any(updateQuery);
         if (updateRow.length > 0) {

@@ -33,7 +33,6 @@ function createList() {
 
     sendListToDB(userId, token, list).then(response => {
         if (response.status !== 200) {
-            window.alert(response.msg);
             showLists();
         }
     });
@@ -76,7 +75,6 @@ async function addListElement(evt) {
 
     updateListInDB(userId, token, listId, listElements).then(response => {
         if (response.status !== 200) {
-            window.alert(response.msg);
             showLists();
         }
     });
@@ -120,14 +118,17 @@ function showLists() {
                 let html = "";
                 html += `<div id="${listId}" class="list-card">`;
                 html += `<h3>${lists[i].title}</h3>`;
-                html += `<div class="list-config-container">
-                                <i class="fas fa-ellipsis-v list-config-icon" onclick="showListConfig()"></i>
+                html += `<div class="list-config-container" onclick="deleteList(event)">
+                                <i class="fas fa-cog list-config-icon"></i>
                                 </div>`;
                 if (listContent) {
                     let listElements = listContent.listElements;
                     html += `<ul>`;
                     for (let j = 0; j < listElements.length; j++) {
                         html += `<li>${listElements[j]}</li>`;
+                        html += `<div class="listelement-config-container" onclick="deleteElement(event)">
+                                <i class="fas fa-ellipsis-h listelement-config-icon"></i>
+                                </div>`;
                     }
                     html += `</ul>`;
                 }
@@ -144,13 +145,14 @@ function showLists() {
 }
 
 // Delete list -------------------------------
-function deleteList() {
+function deleteList(evt) {
     let userId = localStorage.getItem("id");
     let token = localStorage.getItem("token");
-    let listId = localStorage.getItem("listId");
+    let listId = evt.currentTarget.parentNode.id;
 
     deleteListInDB(userId, token, listId).then(response => {
         window.alert(response.msg);
+        showLists();
     }).catch(error => {
         window.alert(error);
     });
@@ -158,7 +160,7 @@ function deleteList() {
 
 function deleteListInDB(userId, token, listId) {
     return fetch(DELETE_LIST_ENDPOINT, {
-        method: "DELETE",
+        method: "POST",
         headers: {
             'Content-Type': 'application/json; charset=utf-8',
             'Accept': 'application/json',
@@ -220,7 +222,8 @@ function getSingleListFromDB(userId, token, listId) {
 
 (function () { // Start point for our litle demo.
     let token = localStorage.getItem("token");
-    if (token) {
+    let userId = localStorage.getItem("id");
+    if (token && userId) {
         ///TODO: Autorisering på server
         showLists();
 

@@ -1,14 +1,3 @@
-// HTML-elements ------------------------------
-
-// LOGIN USIKKER
-let loggedIn = false;
-// -------
-
-if (loggedIn) {
-    window.location = "viewLists.html";
-} else {
-    displayLogin();
-}
 
 function displayNewUser() {
     clearScreen();
@@ -39,3 +28,20 @@ function createElementFromTemplate(templateID) {
     let clone = document.importNode(template.content, true);
     return clone;
 }
+
+
+// ===========================================
+// INIT ======================================
+// ===========================================
+
+(function () {
+    let token = localStorage.getItem("token");
+    let userId = localStorage.getItem("id");
+    if (token && userId) {
+        ///TODO: Autorisering på server
+        window.location = "viewLists.html";
+
+    } else {
+        displayLogin();
+    }
+})()
