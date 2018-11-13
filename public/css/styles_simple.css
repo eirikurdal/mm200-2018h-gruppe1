@@ -12,22 +12,19 @@ html {
 
 body {
     background: #4f6b76;
-    background-image: url("https://wallpaper-house.com/data/out/10/wallpaper2you_386509.jpg");
+    background-image: url(../img/pexels-photo-1235398.jpeg);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center center;
     background-attachment: fixed;
     
     overflow: auto;
-
 }
-
-
 
 #loginBox {
     position: relative;
     text-align: center;
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.5);
     border-radius: 25px;
     margin: auto;
     margin-top: 75px;
@@ -44,7 +41,7 @@ body {
 #newUserBox {
     position: relative;
     text-align: center;
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.5);
     border-radius: 25px;
     margin: auto;
     margin-top: 75px;
@@ -60,9 +57,9 @@ body {
 
 .login-logo {
     position: absolute;
-    top: -30px;
-    left: 115px;
-    width: 75px;
+    top: -125px;
+    left: 70px;
+    width: 175px;
 }
 
 h1 {

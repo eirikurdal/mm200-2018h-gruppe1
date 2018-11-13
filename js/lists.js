@@ -43,8 +43,10 @@ router.post("/update/", async function (req, res) {
         console.log(listElements);
         let listId = req.get("listId");
         console.log(listId);
-        
-        let query = `UPDATE "public"."lists" SET "content"='{"listElements":${listElements}}' WHERE "id"=${listId};`;
+
+        let query = `UPDATE lists SET content='${JSON.stringify({listElements:listElements})}' WHERE id=${listId};`;
+
+        console.log(query);
 
         let datarows = await db.any(query);
 
@@ -67,11 +69,11 @@ router.get("/getall/", async function (req, res) {
 
     try {
         await utilities.authenticateUser(req);
-        
+
         let userId = req.get("userId");
-        let query = `SELECT * FROM lists WHERE owner = ${userId}`;
+        let query = `SELECT * FROM lists WHERE owner = ${userId} ORDER BY id DESC`;
         let datarows = await db.any(query);
-        
+
         let statusCode = datarows ? 200 : 500;
         console.log("Status: " + statusCode);
         res.status(statusCode).json({
@@ -85,16 +87,29 @@ router.get("/getall/", async function (req, res) {
     }
 });
 
+// DELETE LIST ------------------------
+/*
+router.delete("/delete/", async function (req, res) {
+    try {
+        await utilities.authenticateUser(req);
+        
+        let listId = req.get("listId");
+        let deleteQuery = `UPDATE lists SET activated=false WHERE "id"=${userId} AND "activated"='true' RETURNING "id", "username", "email", "hashpassword", "role", "activated";`;
+        let deleteRow = await db.any(deleteQuery);
+    }
+});*/
+
+
 // GET SINGLE LISTS ---------------
 router.get("/get/", async function (req, res) {
 
     try {
         await utilities.authenticateUser(req);
-        
+
         let listId = req.get("listId");
         let query = `SELECT * FROM lists WHERE id = ${listId}`;
         let datarow = await db.any(query);
-        
+
         let statusCode = datarow ? 200 : 500;
         console.log("Status: " + statusCode);
         res.status(statusCode).json(datarow).end()
@@ -105,5 +120,6 @@ router.get("/get/", async function (req, res) {
         console.log("ERROR: " + error);
     }
 });
+
 
 module.exports = router;

@@ -86,7 +86,6 @@ router.post("/delete/", async function (req, res) {
     try {
         await utilities.authenticateUser(req);
 
-
         let updateQuery = `UPDATE "public"."users" SET "activated"='false' WHERE "id"=${userId} AND "activated"='true' RETURNING "id", "username", "email", "hashpassword", "role", "activated";`;
         let updateRow = await db.any(updateQuery);
         if (updateRow.length > 0) {
