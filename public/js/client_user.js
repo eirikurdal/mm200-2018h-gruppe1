@@ -22,7 +22,7 @@ const INPUT_LOGIN_PASSWORD = "loginPassword";
 function addNewUser(evt) {
     evt.preventDefault();
     console.log("addNewUser");
-    
+
     let username = document.getElementById(INPUT_NEW_USERNAME).value;
     let email = document.getElementById(INPUT_NEW_EMAIL).value;
     let password = document.getElementById(INPUT_NEW_PASSWORD).value;
@@ -87,10 +87,10 @@ function sendAndRecieveLoginInfo(user) {
         body: JSON.stringify(user)
     }).then(data => {
         if (data.status === 200) {
-            console.log("Status: "+ data.status);
+            console.log("Status: " + data.status);
             return data.json();
         } else {
-            console.log("Status: "+ data.status);
+            console.log("Status: " + data.status);
             return Promise.reject(new Error('fail'));
         }
     });
@@ -104,9 +104,24 @@ function errorLoggingIn() {
     window.alert("Brukernavn eller passord er galt. Logg inn på nytt");
 }
 
+// Log out ======================================
+
+function logout() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("id");
+    location.reload();
+}
+
 // Delete user ==================================
 
 function deleteUser() {
+
+    let confirmed = confirm("Er du sikker på at du vil slette brukeren din?");
+    if (confirmed !== true) {
+        toggleMenu();
+        return;
+    }
+
     let userId = localStorage.getItem("id");
     let token = localStorage.getItem("token");
 

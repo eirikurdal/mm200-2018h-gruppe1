@@ -5,6 +5,7 @@ html {
 }
 * {
     font-family: 'Roboto', sans-serif;
+    color: rgba(25,25,25,1);
     margin: 0;
     padding: 0;
     box-sizing: border-box;

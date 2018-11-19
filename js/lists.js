@@ -31,10 +31,8 @@ router.post("/add/", utilities.authenticateUser, async function (req, res) {
     }
 });
 
-
 // UPDATE LIST---------------
-router.post("/update/", utilities.authenticateUser, async function (req, res) {
-
+router.post("/update/list/", utilities.authenticateUser, async function (req, res) {
     try {
         let listElements = req.body;
         console.log(listElements);
@@ -60,17 +58,42 @@ router.post("/update/", utilities.authenticateUser, async function (req, res) {
     }
 });
 
+// UPDATE LISTTITLE ---------------
+router.post("/update/listtitle/", utilities.authenticateUser, async function (req, res) {
+    try {
+        let newTitle = req.get("newTitle");
+        let listId = req.get("listId");
+
+        let query = `UPDATE lists SET title='${newTitle}' WHERE id=${listId};`;
+
+        console.log(query);
+
+        let datarows = await db.any(query);
+        console.log(datarows);
+
+        let statusCode = datarows ? 200 : 500;
+        console.log("Status: " + statusCode);
+        res.status(statusCode).json({
+            msg: `Listetittelen er oppdatert.`
+        }).end()
+    } catch (error) {
+        res.status(500).json({
+            error: error
+        }); //something went wrong!
+        console.log("ERROR: " + error);
+    }
+});
 
 // DELETE LIST ------------------------
 router.post("/delete/", utilities.authenticateUser, async function (req, res) {
-    try {        
-        let listId = req.get("listId");        
+    try {
+        let listId = req.get("listId");
         let deleteQuery = `UPDATE "public"."lists" SET "activated"='false' WHERE "id"=${listId} AND "activated"='true' RETURNING "id", "title", "activated";`;
-        
+
         let deleteRow = await db.any(deleteQuery);
-        
+
         console.log(deleteQuery);
-        
+
         if (deleteRow.length > 0) {
             let checkQuery = `SELECT * FROM lists WHERE id = '${listId}'`;
             let datarows = await db.any(checkQuery);
@@ -97,6 +120,42 @@ router.post("/delete/", utilities.authenticateUser, async function (req, res) {
     }
 });
 
+// DELETE LISTELEMENT ------------------------
+router.post("/delete/element", utilities.authenticateUser, async function (req, res) {
+    try {
+        let listId = req.get("listId");
+        let listElement = req.get("listElement");
+        let query = `SELECT * FROM lists WHERE id = ${listId} AND "activated"='true'`;
+        let datarow = await db.any(query);
+
+        if (datarow.length > 0) {
+            // Remove listelement
+            let currentArray = datarow[0].content.listElements;
+            currentArray.splice(listElement, 1);
+
+            // Update array in DB
+            let query = `UPDATE lists SET content='${JSON.stringify({listElements:currentArray})}' WHERE id=${listId};`;
+            let datarows = await db.any(query);
+            let statusCode = datarows ? 200 : 500;
+            console.log("Status: " + statusCode);
+            
+            // Respond to client
+            res.status(200).json({
+                    msg: "Deleted listelement"
+                }).end();
+
+        } else {
+            res.status(404).json({
+                msg: "Listen du vil slette fra eksisterer ikke"
+            });
+        }
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            error: error
+        });
+    }
+});
 
 // GET ALL LISTS ---------------
 router.get("/getall/", utilities.authenticateUser, async function (req, res) {
@@ -118,7 +177,6 @@ router.get("/getall/", utilities.authenticateUser, async function (req, res) {
         console.log("ERROR: " + error);
     }
 });
-
 
 // GET SINGLE LISTS ---------------
 router.get("/get/", utilities.authenticateUser, async function (req, res) {

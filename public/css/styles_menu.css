@@ -1,16 +1,17 @@
 .menu-overlay {
     position: fixed;
+    top: 0;
     width: 100vw;
-    height: 100vh;
+    height: 0vh;
     background: rgba(0,0,0,0);
     transition: background 0.5s;
     z-index: 1;
-    display: none;
 }
 
 .menu-overlay.menu-active {
     background: rgba(0,0,0,0.65);
-    display: block;
+    height: 100vh;
+   
 }
 
 .menu-container {
