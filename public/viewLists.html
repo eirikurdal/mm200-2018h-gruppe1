@@ -15,7 +15,7 @@
 
 
     <!-- FONT AWESOME -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <link rel="stylesheet" href="resources/fontawesome-free-5.5.0-web/css/all.css">
 </head>
 
 <body>
@@ -31,7 +31,7 @@
     </div>
 
     <!-- MENU -->
-    <div class="menu-overlay">
+    <div class="menu-overlay" onclick="toggleMenu()">
         <div class="menu-container">
             <div class="menu-btn" onclick="deleteUser()">
                 <p>Slett bruker</p>
@@ -40,6 +40,14 @@
                 <p>Logg ut</p>
             </div>
         </div>
+    </div>
+
+    <!-- FILTER CONTAINER -->
+    <div id="filterContainer">
+        <div class="filter-btn active-filter" onclick="showLists('all'); toggleFilter(event, 'all')"><i class="fas fa-circle filter-all"></i> Alle</div>
+        <div class="filter-btn" onclick="showLists('hjem'); toggleFilter(event,'hjem')"><i class="fas fa-circle filter-hjem"></i> Hjem</div>
+        <div class="filter-btn" onclick="showLists('jobb'); toggleFilter(event,'jobb')"><i class="fas fa-circle filter-jobb"></i> Jobb</div>
+        <div class="filter-btn" onclick="showLists('skole'); toggleFilter(event,'skole')"><i class="fas fa-circle filter-skole"></i> Skole</div>
     </div>
 
     <!-- LIST CONTAINER -->
@@ -52,6 +60,17 @@
         let menuContainer = document.querySelector(".menu-container");
         menuOverlay.classList.toggle("menu-active");
         menuContainer.classList.toggle("menu-active");
+    }
+
+    function toggleFilter(evt, filter) {
+        let filters = document.querySelector("#filterContainer").children;
+        for (let i = 0; i<filters.length;i++) {
+            filters[i].classList.remove("active-filter");
+        }
+        if (filter){
+            
+        }
+        evt.target.classList.add("active-filter");
     }
 
 </script>

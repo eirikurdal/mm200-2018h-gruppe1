@@ -7,6 +7,7 @@ const utilities = require("./utilities.js");
 
 // ---------------------------
 
+
 // ADD NEW LIST---------------
 router.post("/add/", utilities.authenticateUser, async function (req, res) {
 
@@ -35,11 +36,10 @@ router.post("/add/", utilities.authenticateUser, async function (req, res) {
 router.post("/update/list/", utilities.authenticateUser, async function (req, res) {
     try {
         let listElements = req.body;
-        console.log(listElements);
         let listId = req.get("listId");
-        console.log(listId);
+        let idCount = req.get("newIdCount");
 
-        let query = `UPDATE lists SET content='${JSON.stringify({listElements:listElements})}' WHERE id=${listId};`;
+        let query = `UPDATE lists SET content='${JSON.stringify({listElements:listElements})}', idcount='${idCount}' WHERE id=${listId};`;
 
         console.log(query);
 
@@ -124,14 +124,17 @@ router.post("/delete/", utilities.authenticateUser, async function (req, res) {
 router.post("/delete/element", utilities.authenticateUser, async function (req, res) {
     try {
         let listId = req.get("listId");
-        let listElement = req.get("listElement");
+        let listElementId = req.get("listElementId");
         let query = `SELECT * FROM lists WHERE id = ${listId} AND "activated"='true'`;
         let datarow = await db.any(query);
 
         if (datarow.length > 0) {
             // Remove listelement
             let currentArray = datarow[0].content.listElements;
-            currentArray.splice(listElement, 1);
+            let index = currentArray.findIndex(function(element){
+                return element.id == listElementId;
+            });
+            currentArray.splice(index, 1);
 
             // Update array in DB
             let query = `UPDATE lists SET content='${JSON.stringify({listElements:currentArray})}' WHERE id=${listId};`;

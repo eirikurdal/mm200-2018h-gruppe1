@@ -14,6 +14,9 @@ const INPUT_LIST_TITLE = "listTitle";
 // OUTPUT elements ----------------------
 const OUTPUT_LIST_CONTAINER = "listContainer";
 
+// VARIABLES -----------------------------
+let activeFilter = "";
+
 
 // ===========================================
 // FUNCTIONS =================================
@@ -58,32 +61,40 @@ function sendListToDB(userId, token, list) {
     });
 }
 
-// Add list element --------------------
 
+// Add list element --------------------
 async function addListElement(evt) {
     let userId = localStorage.getItem("id");
     let token = localStorage.getItem("token");
     let listId = evt.currentTarget.parentNode.id;
     console.log(listId);
 
-    let listElement = prompt("Legg til nytt punkt i listen");
-    if (!listElement) {
+    let listElementTitle = prompt("Legg til nytt punkt i listen");
+    if (!listElementTitle) {
         return;
     }
 
     let currentList = await getSingleListFromDB(userId, token, listId);
     let listElements = currentList[0].content.listElements;
-    listElements.push(listElement);
+    let newId = (currentList[0].idcount);
+    let newIdCount = (newId + 1);
+    let newListElement = {
+        title: listElementTitle,
+        dueDate: "",
+        tag: "",
+        id: newId
+    };
+    listElements.push(newListElement);
     console.log(listElements);
 
-    updateListInDB(userId, token, listId, listElements).then(response => {
+    updateListInDB(userId, token, listId, listElements, newIdCount).then(response => {
         if (response.status !== 200) {
-            showLists();
+            showLists(activeFilter);
         }
     });
 }
 
-function updateListInDB(userId, token, listId, listElements) {
+function updateListInDB(userId, token, listId, listElements, newIdCount) {
 
     return fetch(ADD_NEW_LISTELEMENT_ENDPOINT, {
         method: "POST",
@@ -92,13 +103,15 @@ function updateListInDB(userId, token, listId, listElements) {
             'Accept': 'application/json',
             'Auth': token,
             'UserId': userId,
-            'ListId': listId
+            'ListId': listId,
+            'NewIdCount': newIdCount
         },
         body: JSON.stringify(listElements)
     }).then(data => {
         return data.json();
     });
 }
+
 
 // Update list title ----------------------
 async function updateListTitle(evt) {
@@ -107,15 +120,15 @@ async function updateListTitle(evt) {
     let listId = evt.currentTarget.parentNode.parentNode.parentNode.id;
     let currentList = await getSingleListFromDB(userId, token, listId);
     console.log(currentList);
-    
+
     let oldTitle = currentList[0].title;
     let newTitle = prompt("Endre listetittel", oldTitle);
-    
+
     console.log(newTitle);
-    
+
     updateListtitleInDB(userId, token, listId, newTitle).then(response => {
         if (response.status !== 200) {
-            showLists();
+            showLists(activeFilter);
         }
     });
 }
@@ -137,8 +150,8 @@ function updateListtitleInDB(userId, token, listId, newTitle) {
     });
 }
 
-// Update list element --------------------
 
+// Update list element --------------------
 async function updateListElement(evt) {
     let userId = localStorage.getItem("id");
     let token = localStorage.getItem("token");
@@ -146,17 +159,17 @@ async function updateListElement(evt) {
     let listElement = evt.currentTarget.parentNode.parentNode.parentNode.id;
     let currentList = await getSingleListFromDB(userId, token, listId);
     console.log(currentList);
-    
-    let oldText = currentList[0].content.listElements[listElement];
+
+    let oldText = currentList[0].content.listElements[listElement].title;
     let newText = prompt("Endre listeelementet", oldText);
-    
+
     let listElements = currentList[0].content.listElements;
-    listElements[listElement] = newText;
+    listElements[listElement].title = newText;
     console.log(listElements);
 
     updateListelementsInDB(userId, token, listId, listElements).then(response => {
         if (response.status !== 200) {
-            showLists();
+            showLists(activeFilter);
         }
     });
 }
@@ -178,63 +191,52 @@ function updateListelementsInDB(userId, token, listId, listElements) {
     });
 }
 
-// Show all lists ----------------------------
-function showLists() {
 
+// Toggle list element tag --------------------
+async function toggleListElementTag(evt, newTag) {
     let userId = localStorage.getItem("id");
     let token = localStorage.getItem("token");
+    let listId = evt.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode.id;
+    let listElementId = evt.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.id;
+    let currentList = await getSingleListFromDB(userId, token, listId);
+    let idCount = currentList[0].idcount;
+    //let oldTag = currentList[0].content.listElements[listElement].tag;
+    
+    let listElements = currentList[0].content.listElements;
+    
+    let index = listElements.findIndex(function(element){
+                return element.id == listElementId;
+            });
 
-    getAllListsFromDB(userId, token).then(response => {
+   
+    listElements[index].tag = newTag;
+    console.log(listElements);
+
+    updateListelementsInDB(userId, token, listId, listElements, idCount).then(response => {
         if (response.status !== 200) {
-            let lists = response.lists;
-            //lists.reverse();
-            console.log(lists);
-
-            let listContainer = document.getElementById("listContainer");
-            listContainer.innerHTML = "";
-
-            for (let i = 0; i < lists.length; i++) {
-                let listContent = lists[i].content;
-                let listId = lists[i].id;
-                let html = "";
-                html += `<div id="${listId}" class="list-card">`;
-                html += `<h3>${lists[i].title}</h3>`;
-                html += `<div class="list-config-container">
-                        <i class="fas fa-cog list-config-icon"></i>`;
-                html += `<div class="dropdown">
-                                <div onclick="updateListTitle(event)">Endre</div>
-                                <div onclick="">Tagger</div>
-                                <div onclick="deleteList(event)">Slett</div>
-                                </div>`;
-                html += `</div>`;
-                if (listContent) {
-                    let listElements = listContent.listElements;
-                    html += `<ul>`;
-                    for (let j = 0; j < listElements.length; j++) {
-                        html += `<li id="${j}">${listElements[j]}`;
-                        html += `<div class="listelement-config-container">`
-                        html += `<i class="fas fa-ellipsis-h listelement-config-icon"></i>`
-                        html += `<div class="dropdown">
-                                <div onclick="updateListElement(event)">Endre</div>
-                                <div onclick="">Forfallsdato</div>
-                                <div onclick="">Tagger</div>
-                                <div onclick="deleteListElement(event)">Slett</div>
-                                </div>`;
-                        html += `</div></li>`;
-                    }
-                    html += `</ul>`;
-                }
-                html += `<div class="new-list-element" onclick="addListElement(event)">`;
-                html += `<i class="fas fa-plus new-list-element-icon"></i>`;
-                html += `</div>`;
-                html += `</div>`;
-
-                listContainer.innerHTML += html;
-
-            }
+            showLists(activeFilter);
         }
     });
 }
+
+function updateListelementsInDB(userId, token, listId, listElements, idCount) {
+
+    return fetch(ADD_NEW_LISTELEMENT_ENDPOINT, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json',
+            'Auth': token,
+            'UserId': userId,
+            'ListId': listId,
+            'NewIdCount': idCount
+        },
+        body: JSON.stringify(listElements)
+    }).then(data => {
+        return data.json();
+    });
+}
+
 
 // Delete list -------------------------------
 function deleteList(evt) {
@@ -246,7 +248,7 @@ function deleteList(evt) {
     let userId = localStorage.getItem("id");
     let token = localStorage.getItem("token");
     let listId = evt.currentTarget.parentNode.parentNode.parentNode.id;
-    
+
     deleteListInDB(userId, token, listId).then(response => {
         window.alert(response.msg);
         showLists();
@@ -279,6 +281,7 @@ function deleteListInDB(userId, token, listId) {
     });
 }
 
+
 // Delete listelement ------------------------
 async function deleteListElement(evt) {
     let confirmed = confirm("Er du sikker på at du vil slette dette listeelementet?");
@@ -289,15 +292,12 @@ async function deleteListElement(evt) {
     let userId = localStorage.getItem("id");
     let token = localStorage.getItem("token");
     let listId = evt.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.id;
-    let listElement = evt.currentTarget.parentNode.parentNode.parentNode.id;
-    console.log("listid= " + listId + ", listelement = " + listElement);
+    let listElementId = evt.currentTarget.parentNode.parentNode.parentNode.id;
+    console.log("listid= " + listId + ", listelement = " + listElementId);
 
 
-    deleteListElementInDB(userId, token, listId, listElement).then(response => {
-        console.log("her er vi også");
-
-        window.alert(response.msg);
-        console.log("her er vi");
+    deleteListElementInDB(userId, token, listId, listElementId).then(response => {
+        console.log(response.msg);
         showLists();
     }).catch(error => {
         window.alert(error);
@@ -305,7 +305,7 @@ async function deleteListElement(evt) {
 
 }
 
-function deleteListElementInDB(userId, token, listId, listElement) {
+function deleteListElementInDB(userId, token, listId, listElementId) {
     return fetch(DELETE_LISTELEMENT_ENDPOINT, {
         method: "POST",
         headers: {
@@ -314,7 +314,7 @@ function deleteListElementInDB(userId, token, listId, listElement) {
             'Auth': token,
             'userId': userId,
             'listId': listId,
-            'listElement': listElement
+            'listElementId': listElementId
         }
     }).then(data => {
         if (data.status === 200) {
@@ -331,6 +331,76 @@ function deleteListElementInDB(userId, token, listId, listElement) {
 
 
 // Utilities ---------------------------------
+function showLists(newFilter) {
+    let userId = localStorage.getItem("id");
+    let token = localStorage.getItem("token");
+
+    getAllListsFromDB(userId, token).then(response => {
+        if (response.status !== 200) {
+            let lists = response.lists;
+
+            let listContainer = document.getElementById("listContainer");
+            listContainer.innerHTML = "";
+
+            for (let i = 0; i < lists.length; i++) {
+                let listContent = lists[i].content;
+                let listId = lists[i].id;
+                let html = "";
+                html += `<div id="${listId}" class="list-card">
+                            <h3>${lists[i].title}</h3>
+                            <div class="list-config-container">
+                            <i class="fas fa-cog list-config-icon"></i>
+                            <div class="dropdown">
+                                <div onclick="updateListTitle(event)">Endre</div>
+                                <div onclick="deleteList(event)">Slett</div>
+                            </div>
+                        </div>`;
+                if (listContent) {
+                    let listElements = listContent.listElements;
+                    let sortedListElements = filterListElements(listElements, newFilter);
+                    html += `<ul>`;
+                    for (let j = 0; j < sortedListElements.length; j++) {
+                        let id = sortedListElements[j].id;
+                        html += `<li id="${id}">${sortedListElements[j].title}
+                                    <div class="listelement-config-container">
+                                        <i class="fas fa-ellipsis-h listelement-config-icon"></i>
+                                        <div class="dropdown">
+                                            <div onclick="updateListElement(event)">Endre</div>
+                                            <div onclick="">Forfallsdato</div>
+                                            <div class="dropdown-sub-container">Tagger
+                                                <div class="dropdown-sub">
+                                                    <div onclick="toggleListElementTag(event,'hjem')">
+                                                        <i class="fas fa-circle filter-hjem"></i>
+                                                        Hjem
+                                                    </div>
+                                                    <div onclick="toggleListElementTag(event,'jobb')">
+                                                        <i class="fas fa-circle filter-jobb"></i>
+                                                        Jobb
+                                                    </div>
+                                                    <div onclick="toggleListElementTag(event,'skole')">
+                                                        <i class="fas fa-circle filter-skole"></i>
+                                                        Skole
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div onclick="deleteListElement(event)">Slett</div>
+                                        </div>
+                                    </div>
+                                </li>`;
+                    }
+                    html += `</ul>`;
+                }
+                html += `<div class="new-list-element" onclick="addListElement(event)">
+                            <i class="fas fa-plus new-list-element-icon"></i>
+                        </div>
+                    </div>`;
+
+                listContainer.innerHTML += html;
+
+            }
+        }
+    });
+}
 
 function getAllListsFromDB(userId, token) {
 
@@ -363,6 +433,27 @@ function getSingleListFromDB(userId, token, listId) {
     });
 }
 
+function filterListElements(listElements, newFilter) {
+    if (newFilter) {
+        if (newFilter == "all") {
+            activeFilter = newFilter;
+            return listElements;
+        }
+        activeFilter = newFilter;
+    } else {
+        return listElements;
+    }
+    let sortedListElements = [];
+
+    for (let i = 0; i < listElements.length; i++) {
+        if (listElements[i].tag == activeFilter) {
+            sortedListElements.push(listElements[i]);
+        }
+    }
+    return sortedListElements;
+
+}
+
 // ===========================================
 // INIT ======================================
 // ===========================================
@@ -371,7 +462,6 @@ function getSingleListFromDB(userId, token, listId) {
     let token = localStorage.getItem("token");
     let userId = localStorage.getItem("id");
     if (token && userId) {
-        ///TODO: Autorisering på server
         showLists();
 
     } else {

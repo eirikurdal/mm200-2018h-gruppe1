@@ -1,3 +1,5 @@
+/* --------- HEADER--------------- */
+
 .header {
     position: fixed;
     top: 0;
@@ -13,7 +15,6 @@
     display: block;
     height: 60px;
     margin: 10px auto;
-
 }
 
 .new-list-icon {
@@ -33,8 +34,58 @@
     color: rgba(255, 255, 255, 1);
 }
 
-#listContainer {
+/* --------- FILTERS--------------- */
+
+#filterContainer {
+    text-align: center;
+    font-size: 0;
+    margin: auto;
     margin-top: 90px;
+    width: 90vw;
+    max-width: 500px;
+}
+
+.filter-btn {
+    display: inline-block;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.85);
+    margin: auto;
+    padding: 10px;
+    padding-right: 15px;
+    border-radius: 100px;
+    margin: 1%;
+    opacity: 0.5;
+
+    transition: opacity 0.2s;
+}
+
+.filter-all {
+    color: rgb(200, 200, 200);
+}
+
+.filter-hjem {
+    color: rgb(43, 181, 80);
+}
+
+.filter-jobb {
+    color: rgb(58, 64, 199);
+}
+
+.filter-skole {
+    color: rgb(188, 25, 56);
+}
+
+.active-filter {
+    opacity: 1;
+}
+
+.filter-btn:hover:not(.active-filter) {
+    opacity: 0.75;
+}
+
+/* --------- LISTS--------------- */
+
+#listContainer {
     z-index: 0;
 }
 
@@ -84,35 +135,53 @@
     width: 20px;
     float: right;
 }
+.dropdown-sub-container {
+    position: relative;
+}
 
-.dropdown {
+.dropdown, .dropdown-sub {
     display: none;
     position: absolute;
-    background: rgba(200, 200, 200, 1);
+    background: rgba(200, 200, 200, 0);
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15);
     border-radius: 5px;
     width: 125px;
-    right: 20px;
-    top: 0;
-    padding: 5px;
     z-index: 1;
-    }
+}
 
-.dropdown div{
+.dropdown {
+    right: 20px;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+
+.dropdown-sub {
+    right: 115px;
+    top: 0;
+}
+
+.dropdown div:not(.dropdown-sub) {
     color: black;
     padding: 10px;
     display: block;
 }
 
-.dropdown div:hover {background-color: #ddd;}
-
-.listelement-config-container:hover .dropdown,
-.list-config-container:hover .dropdown{
-    display: block;
+.dropdown div:not(.dropdown-sub):hover {
+    background-color: rgba(235, 235, 235, 1);
 }
 
-.listelement-config-container:hover i,
-.list-config-container:hover i{color: rgba(255, 226, 0, 1);}
+.listelement-config-container:hover .dropdown,
+.list-config-container:hover .dropdown,
+.dropdown-sub-container:hover .dropdown-sub{
+    display: block;
+    background: rgba(215, 215, 215, 1);
+}
+
+.listelement-config-container:hover i:not(.fa-circle),
+.list-config-container:hover i {
+    color: rgba(255, 226, 0, 1);
+}
 
 .list-card .new-list-element {
     font-size: 1rem;
