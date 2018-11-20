@@ -15,7 +15,7 @@ const INPUT_LIST_TITLE = "listTitle";
 const OUTPUT_LIST_CONTAINER = "listContainer";
 
 // VARIABLES -----------------------------
-let activeFilter = "";
+let activeFilter = "all";
 
 
 // ===========================================
@@ -81,7 +81,7 @@ async function addListElement(evt) {
     let newListElement = {
         title: listElementTitle,
         duedate: "",
-        tag: "",
+        tag: "all",
         id: newId
     };
     listElements.push(newListElement);
@@ -165,10 +165,10 @@ async function updateListElement(evt) {
     let index = listElements.findIndex(function (element) {
         return element.id == listElementId;
     });
-    
+
     let oldText = currentList[0].content.listElements[index].title;
     let newText = prompt("Endre listeelementet", oldText);
-    
+
     listElements[index].title = newText;
     console.log(listElements);
 
@@ -204,7 +204,7 @@ async function updateDueDate(evt) {
     let token = localStorage.getItem("token");
     let listId = evt.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.id;
     let listElementId = evt.currentTarget.parentNode.parentNode.parentNode.id;
-    
+
     let currentList = await getSingleListFromDB(userId, token, listId);
     let idCount = currentList[0].idcount;
 
@@ -213,12 +213,21 @@ async function updateDueDate(evt) {
     let index = listElements.findIndex(function (element) {
         return element.id == listElementId;
     });
-    
-    let newDate = prompt("Endre forfallsdato (MM/DD/ÅÅÅÅ)", "12/24/2018");
+
+    let todayString = function () {
+        let today = new Date();
+        let month = ((today.getMonth()) + 1);
+        let day = today.getDate();
+        let year = today.getFullYear();
+
+        return (month + "/" + day + "/" + year);
+    }
+
+    let newDate = prompt("Endre forfallsdato (MM/DD/ÅÅÅÅ)", todayString());
     if (!newDate) {
         return;
     }
-    
+
     listElements[index].duedate = newDate;
     console.log(listElements);
 
@@ -264,7 +273,7 @@ async function toggleListElementTag(evt, newTag) {
     });
 
     if (newTag == "none") {
-        newTag = "";
+        newTag = "all";
     }
 
     listElements[index].tag = newTag;
@@ -402,9 +411,29 @@ function showLists(newFilter) {
 
             for (let i = 0; i < lists.length; i++) {
                 let listContent = lists[i].content;
+                let listElements = listContent.listElements;
+                let sortedListElements = filterListElements(listElements, newFilter);
                 let listId = lists[i].id;
                 let html = "";
-                html += `<div id="${listId}" class="list-card">
+
+                // Sjekke om listen har innhold med aktivt filter
+                let listContainsElements = function (newFilter) {
+                    if (activeFilter == "all"){
+                        return true;
+                    } else if (activeFilter == "duetoday"){
+                        return true;
+                    }
+                    for (let k = 0; k < listElements.length; k++) {
+                        if (listElements[k].tag == newFilter) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                //------
+
+                if (listContainsElements(newFilter) === true) {
+                    html += `<div id="${listId}" class="list-card">
                             <h3>${lists[i].title}</h3>
                             <div class="list-config-container">
                             <i class="fas fa-cog list-config-icon" alt="listeinnstillinger"></i>
@@ -413,28 +442,45 @@ function showLists(newFilter) {
                                 <div alt="slett liste" onclick="deleteList(event)">Slett</div>
                             </div>
                         </div>`;
-                if (listContent) {
-                    let listElements = listContent.listElements;
-                    let sortedListElements = filterListElements(listElements, newFilter);
-                    html += `<ul>`;
-                    for (let j = 0; j < sortedListElements.length; j++) {
-                        let id = sortedListElements[j].id;
-                        let duedateString = sortedListElements[j].duedate;
-                        let duedate = new Date(duedateString);
-                        console.log(duedate);
-                        let today = new Date();
-                        
-                            
-                            
-                        html += `<li id="${id}">${sortedListElements[j].title}
+                    if (listContent) {
+                        html += `<ul>`;
+                        for (let j = 0; j < sortedListElements.length; j++) {
+                            let id = sortedListElements[j].id;
+
+                            // Sjekke forfall
+                            let duedateString = sortedListElements[j].duedate;
+                            let duedate = new Date(duedateString);
+                            let today = new Date();
+
+                            let daysToDuedate = findDifferenceInDays(duedate, today);
+
+                            let colorCodeClass;
+
+                            if (daysToDuedate >= 7) {
+                                colorCodeClass = "duedate-ok";
+                            } else if (daysToDuedate < 0) {
+                                colorCodeClass = "duedate-passed";
+                            } else if (daysToDuedate == 0) {
+                                colorCodeClass = "duedate-today";
+                            } else {
+                                colorCodeClass = "duedate-soon";
+                            }
+
+                            //-------
+
+                            html += `<li id="${id}">${sortedListElements[j].title}
                                     <div class="listelement-config-container">
-                                        <div class="duedate">${duedateString}</div>
+                                        <div class="duedate ${colorCodeClass}">${duedateString}</div>
                                         <i class="fas fa-ellipsis-h listelement-config-icon"></i>
                                         <div class="dropdown">
                                             <div alt="endre listeelement" onclick="updateListElement(event)">Endre</div>
                                             <div alt="endre forfallsdato" onclick="updateDueDate(event)">Forfallsdato</div>
                                             <div alt="legg til tagger på listeelement" class="dropdown-sub-container">Tagger
                                                 <div class="dropdown-sub">
+                                                    <div alt="ta bort tagger" onclick="toggleListElementTag(event,'none')">
+                                                        <i class="far fa-circle filter-all"></i>
+                                                        Ingen
+                                                    </div>
                                                     <div alt="tag hjem" onclick="toggleListElementTag(event,'hjem')">
                                                         <i class="fas fa-circle filter-hjem"></i>
                                                         Hjem
@@ -453,16 +499,16 @@ function showLists(newFilter) {
                                         </div>
                                     </div>
                                 </li>`;
+                        }
+                        html += `</ul>`;
                     }
-                    html += `</ul>`;
-                }
-                html += `<div class="new-list-element" onclick="addListElement(event)">
+                    html += `<div class="new-list-element" onclick="addListElement(event)">
                             <i class="fas fa-plus new-list-element-icon"></i>
                         </div>
                     </div>`;
 
-                listContainer.innerHTML += html;
-
+                    listContainer.innerHTML += html;
+                }
             }
         }
     });
@@ -500,16 +546,31 @@ function getSingleListFromDB(userId, token, listId) {
 }
 
 function filterListElements(listElements, newFilter) {
+    let sortedListElements = [];
+
     if (newFilter) {
         if (newFilter == "all") {
             activeFilter = newFilter;
             return listElements;
         }
+        if (newFilter == "duetoday") {
+            for (let i = 0; i < listElements.length; i++) {
+
+                let duedateString = listElements[i].duedate;
+                let duedate = new Date(duedateString);
+                let today = new Date();
+                let daysToDuedate = findDifferenceInDays(duedate, today);
+
+                if (daysToDuedate == 0) {
+                    sortedListElements.push(listElements[i]);
+                }
+            }
+            return sortedListElements;
+        }
         activeFilter = newFilter;
     } else {
         return listElements;
     }
-    let sortedListElements = [];
 
     for (let i = 0; i < listElements.length; i++) {
         if (listElements[i].tag == activeFilter) {
@@ -518,6 +579,16 @@ function filterListElements(listElements, newFilter) {
     }
     return sortedListElements;
 
+}
+
+function findDifferenceInDays(duedate, today) {
+    return Math.floor((Date.UTC(duedate.getFullYear(),
+                duedate.getMonth(),
+                duedate.getDate()) -
+            Date.UTC(today.getFullYear(),
+                today.getMonth(),
+                today.getDate())) /
+        (1000 * 60 * 60 * 24));
 }
 
 // ===========================================

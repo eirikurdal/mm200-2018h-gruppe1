@@ -47,10 +47,11 @@
 
     <!-- FILTER CONTAINER -->
     <div id="filterContainer">
-        <div class="filter-btn active-filter" alt="alle" onclick="showLists('all'); toggleFilter(event, 'all')"><i class="fas fa-circle filter-all"></i> Alle</div>
-        <div class="filter-btn" alt="hjem" onclick="showLists('hjem'); toggleFilter(event,'hjem')"><i class="fas fa-circle filter-hjem"></i> Hjem</div>
-        <div class="filter-btn" alt="jobb" onclick="showLists('jobb'); toggleFilter(event,'jobb')"><i class="fas fa-circle filter-jobb"></i> Jobb</div>
-        <div class="filter-btn" alt="skole" onclick="showLists('skole'); toggleFilter(event,'skole')"><i class="fas fa-circle filter-skole"></i> Skole</div>
+        <div class="filter-btn active-filter" alt="alle" onclick="showLists('all'); toggleFilter(event, 'all')"><i class="far fa-circle filter-all"></i> Alle</div>
+        <div class="filter-btn" alt="filter hjem" onclick="showLists('hjem'); toggleFilter(event,'hjem')"><i class="fas fa-circle filter-hjem"></i> Hjem</div>
+        <div class="filter-btn" alt="filter jobb" onclick="showLists('jobb'); toggleFilter(event,'jobb')"><i class="fas fa-circle filter-jobb"></i> Jobb</div>
+        <div class="filter-btn" alt="filter skole" onclick="showLists('skole'); toggleFilter(event,'skole')"><i class="fas fa-circle filter-skole"></i> Skole</div>
+        <div class="filter-btn" alt="filter forfaller i dag" onclick="showLists('duetoday'); toggleFilter(event,'duetoday')"><i class="fas fa-clock filter-duetoday"></i> I dag</div>
     </div>
 
     <!-- LIST CONTAINER -->
@@ -71,9 +72,8 @@
             filters[i].classList.remove("active-filter");
         }
         if (filter){
-            
-        }
-        evt.target.classList.add("active-filter");
+            evt.target.classList.add("active-filter");
+        }   
     }
 
 
