@@ -116,6 +116,21 @@
     padding: 5px;
 }
 
+.list-card .duedate {
+    position: absolute;
+    font-size: 0.5rem;
+    font-weight: bold;
+    color: #000;
+    background: rgba(215, 215, 215, 1);
+    border-radius: 5px;
+    right: 30px;
+    padding: 5px;
+}
+
+.list-card .duedate:empty {
+    padding: 0;
+}
+
 .list-card li {
     position: relative;
     list-style-type: none;
@@ -128,6 +143,10 @@
 
 .list-card li:hover {
     background: rgba(255, 255, 255, 1);
+}
+
+.list-card li.highlight {
+    background: rgba(255, 226, 0, 1);
 }
 
 .listelement-config-container {

@@ -112,9 +112,25 @@ router.post("/delete/", utilities.authenticateUser, async function (req, res) {
     }
 });
 
-router.post("/changepassword/", async function (req, res) {
-    let email = req.body.email;
-    let password = req.body.password;
+router.post("/changepassword/", utilities.authenticateUser, async function (req, res) {
+    let userId = req.get("userId");
+    let password = req.get("newPassword");
+    let hashPassword = bcrypt.hashSync(password, 10);
+    
+    let query = `UPDATE users SET hashpassword='${hashPassword}' WHERE id=${userId} AND activated='true'`;
+    
+    try{
+        let statusCode = await db.any(query) ? 200 : 500;
+        console.log("Status: " + statusCode);
+        res.status(statusCode).json({
+                msg: `Passordet ditt er endret`
+            }).end()
+    } catch (error) {
+            res.status(500).json({
+                error: error
+            }); //something went wrong!
+            console.log("ERROR: " + error);
+        }
 
 
 

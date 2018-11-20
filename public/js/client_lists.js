@@ -80,7 +80,7 @@ async function addListElement(evt) {
     let newIdCount = (newId + 1);
     let newListElement = {
         title: listElementTitle,
-        dueDate: "",
+        duedate: "",
         tag: "",
         id: newId
     };
@@ -156,25 +156,30 @@ async function updateListElement(evt) {
     let userId = localStorage.getItem("id");
     let token = localStorage.getItem("token");
     let listId = evt.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.id;
-    let listElement = evt.currentTarget.parentNode.parentNode.parentNode.id;
+    let listElementId = evt.currentTarget.parentNode.parentNode.parentNode.id;
     let currentList = await getSingleListFromDB(userId, token, listId);
-    console.log(currentList);
-
-    let oldText = currentList[0].content.listElements[listElement].title;
-    let newText = prompt("Endre listeelementet", oldText);
+    let idCount = currentList[0].idcount;
 
     let listElements = currentList[0].content.listElements;
-    listElements[listElement].title = newText;
+
+    let index = listElements.findIndex(function (element) {
+        return element.id == listElementId;
+    });
+    
+    let oldText = currentList[0].content.listElements[index].title;
+    let newText = prompt("Endre listeelementet", oldText);
+    
+    listElements[index].title = newText;
     console.log(listElements);
 
-    updateListelementsInDB(userId, token, listId, listElements).then(response => {
+    updateListelementsInDB(userId, token, listId, listElements, idCount).then(response => {
         if (response.status !== 200) {
             showLists(activeFilter);
         }
     });
 }
 
-function updateListelementsInDB(userId, token, listId, listElements) {
+function updateListelementsInDB(userId, token, listId, listElements, idCount) {
 
     return fetch(ADD_NEW_LISTELEMENT_ENDPOINT, {
         method: "POST",
@@ -183,7 +188,58 @@ function updateListelementsInDB(userId, token, listId, listElements) {
             'Accept': 'application/json',
             'Auth': token,
             'UserId': userId,
-            'ListId': listId
+            'ListId': listId,
+            'NewIdCount': idCount
+        },
+        body: JSON.stringify(listElements)
+    }).then(data => {
+        return data.json();
+    });
+}
+
+
+// Update due date -------------------- UFERDIG
+async function updateDueDate(evt) {
+    let userId = localStorage.getItem("id");
+    let token = localStorage.getItem("token");
+    let listId = evt.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.id;
+    let listElementId = evt.currentTarget.parentNode.parentNode.parentNode.id;
+    
+    let currentList = await getSingleListFromDB(userId, token, listId);
+    let idCount = currentList[0].idcount;
+
+    let listElements = currentList[0].content.listElements;
+
+    let index = listElements.findIndex(function (element) {
+        return element.id == listElementId;
+    });
+    
+    let newDate = prompt("Endre forfallsdato (MM/DD/ÅÅÅÅ)", "12/24/2018");
+    if (!newDate) {
+        return;
+    }
+    
+    listElements[index].duedate = newDate;
+    console.log(listElements);
+
+    updateListelementsInDB(userId, token, listId, listElements, idCount).then(response => {
+        if (response.status !== 200) {
+            showLists(activeFilter);
+        }
+    });
+}
+
+function updateListelementsInDB(userId, token, listId, listElements, idCount) {
+
+    return fetch(ADD_NEW_LISTELEMENT_ENDPOINT, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json',
+            'Auth': token,
+            'UserId': userId,
+            'ListId': listId,
+            'NewIdCount': idCount
         },
         body: JSON.stringify(listElements)
     }).then(data => {
@@ -200,15 +256,17 @@ async function toggleListElementTag(evt, newTag) {
     let listElementId = evt.currentTarget.parentNode.parentNode.parentNode.parentNode.parentNode.id;
     let currentList = await getSingleListFromDB(userId, token, listId);
     let idCount = currentList[0].idcount;
-    //let oldTag = currentList[0].content.listElements[listElement].tag;
-    
-    let listElements = currentList[0].content.listElements;
-    
-    let index = listElements.findIndex(function(element){
-                return element.id == listElementId;
-            });
 
-   
+    let listElements = currentList[0].content.listElements;
+
+    let index = listElements.findIndex(function (element) {
+        return element.id == listElementId;
+    });
+
+    if (newTag == "none") {
+        newTag = "";
+    }
+
     listElements[index].tag = newTag;
     console.log(listElements);
 
@@ -361,14 +419,26 @@ function showLists(newFilter) {
                     html += `<ul>`;
                     for (let j = 0; j < sortedListElements.length; j++) {
                         let id = sortedListElements[j].id;
+                        let duedateString = sortedListElements[j].duedate;
+                        let duedate = new Date(duedateString);
+                        console.log(duedate);
+                        let today = new Date();
+                        
+                            
+                            
                         html += `<li id="${id}">${sortedListElements[j].title}
                                     <div class="listelement-config-container">
+                                        <div class="duedate">${duedateString}</div>
                                         <i class="fas fa-ellipsis-h listelement-config-icon"></i>
                                         <div class="dropdown">
                                             <div onclick="updateListElement(event)">Endre</div>
-                                            <div onclick="">Forfallsdato</div>
+                                            <div onclick="updateDueDate(event)">Forfallsdato</div>
                                             <div class="dropdown-sub-container">Tagger
                                                 <div class="dropdown-sub">
+                                                    <div onclick="toggleListElementTag(event,'none')">
+                                                        <i class="far fa-circle filter-all"></i>
+                                                        Ingen
+                                                    </div>
                                                     <div onclick="toggleListElementTag(event,'hjem')">
                                                         <i class="fas fa-circle filter-hjem"></i>
                                                         Hjem

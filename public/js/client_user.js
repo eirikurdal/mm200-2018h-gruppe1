@@ -5,6 +5,7 @@
 const ADD_NEW_USER_ENDPOINT = '/users/register'; //'/api/user';
 const DELETE_USER_ENDPOINT = '/users/delete';
 const LOGIN_ENDPOINT = '/users/login';
+const CHANGE_PASSWORD_ENDPOINT = 'users/changepassword';
 
 // ADD new user elements --------
 const INPUT_NEW_USERNAME = "newUsername";
@@ -40,7 +41,6 @@ function addNewUser(evt) {
         }
     });
 }
-
 
 function sendAndRecieveUsernameDB(user) {
     console.log("sendAndRecieveUsernameDB");
@@ -110,6 +110,48 @@ function logout() {
     localStorage.removeItem("token");
     localStorage.removeItem("id");
     location.reload();
+}
+
+// Change password ==================================
+function changePassword() {
+
+    let newPassword = prompt("Skriv inn ditt nye passord.");
+    if (!newPassword) {
+        return;
+    }
+
+    let userId = localStorage.getItem("id");
+    let token = localStorage.getItem("token");
+
+    sendAndRecieveNewPassword(userId, token, newPassword).then(response => {
+        window.alert(response.msg);
+    }).catch(error => {
+        window.alert(error);
+    });
+}
+
+function sendAndRecieveNewPassword(userId, token, newPassword) {
+    return fetch(CHANGE_PASSWORD_ENDPOINT, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json',
+            'Auth': token,
+            'userId': userId,
+            'newPassword': newPassword
+        }
+    }).then(data => {
+
+        if (data.status === 200) {
+            return data.json();
+        } else if (data.status === 400) {
+            return Promise.reject(new Error(data.status + ', Noe gikk galt!'));
+        } else if (data.status === 404) {
+            return Promise.reject(new Error(data.status + ', Brukeren du vil endre eksisterer ikke.'));
+        } else {
+            return Promise.reject(new Error(data.status + ', fail'));
+        }
+    });
 }
 
 // Delete user ==================================
