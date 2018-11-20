@@ -17,34 +17,34 @@
     <template id="newUserTemplate">
         <div id="newUserBox">
             <img class="login-logo" alt="utdl_logo" src="./img/Utdl_logo_v2.png">
-            <h1>NY BRUKER</h1>
+            <h1 alt="Nybruker">NY BRUKER</h1>
             <form id="newUserForm" onsubmit="addNewUser(event)">
-                <input id="newUsername" class="input-top" type="text" placeholder="Brukernavn" required>
+                <input id="newUsername" class="input-top" alt="nyttBrukernavn" type="text" placeholder="Brukernavn" required>
                 <br>
-                <input id="newEmail" type="email" placeholder="E-mail" required>
+                <input id="newEmail" type="email" alt="NyEmail" placeholder="E-mail" required>
                 <br>
-                <input id="newPassword" class="input-bottom" type="password" placeholder="Brukernavn" required>
+                <input id="newPassword" class="input-bottom" alt="NyttPassord" type="password" placeholder="Brukernavn" required>
                 <br>
 
-                <button id="btnCreate" class="btn-large" type="submit">Lag bruker</button>
+                <button id="btnCreate" class="btn-large" alt="LagBruker" type="submit">Lag bruker</button>
             </form>
-            <button id="btnDisplayLogin" class="btn-small" onclick="displayLogin()">Allerede bruker?</button>
+            <button id="btnDisplayLogin" class="btn-small" alt="alleredebruker" onclick="displayLogin()">Allerede bruker?</button>
         </div>
     </template>
 
     <template id="loginTemplate">
         <div id="loginBox">
             <img class="login-logo" alt="utdl_logo" src="./img/Utdl_logo_v2.png">
-            <h1>LOGG INN</h1>
+            <h1 alt="LoggInn">LOGG INN</h1>
             <form id="loginForm" onsubmit="login(event)">
-                <input id="loginEmail" class="input-top" type="email" placeholder="E-mail" required>
+                <input id="loginEmail" class="input-top" alt="LoginEmail" type="email" placeholder="E-mail" required>
                 <br>
-                <input id="loginPassword" class="input-bottom" type="password" placeholder="Password" required>
+                <input id="loginPassword" class="input-bottom" alt="LoginPassord" type="password" placeholder="Password" required>
                 <br>
 
-                <button id="btnLogin" class="btn-large" type="submit">Logg inn</button>
+                <button id="btnLogin" class="btn-large" alt="logginnKnapp" type="submit">Logg inn</button>
             </form>
-            <button id="btnDisplayNewUser" class="btn-small" onclick="displayNewUser()">Lag ny bruker</button>
+            <button id="btnDisplayNewUser" class="btn-small" alt="lagnybruker" onclick="displayNewUser()">Lag ny bruker</button>
         </div>
     </template>
 

@@ -349,10 +349,10 @@ function showLists(newFilter) {
                 html += `<div id="${listId}" class="list-card">
                             <h3>${lists[i].title}</h3>
                             <div class="list-config-container">
-                            <i class="fas fa-cog list-config-icon"></i>
+                            <i class="fas fa-cog list-config-icon" alt="kog"></i>
                             <div class="dropdown">
-                                <div onclick="updateListTitle(event)">Endre</div>
-                                <div onclick="deleteList(event)">Slett</div>
+                                <div alt="endre" onclick="updateListTitle(event)">Endre</div>
+                                <div alt="slett" onclick="deleteList(event)">Slett</div>
                             </div>
                         </div>`;
                 if (listContent) {
@@ -365,25 +365,25 @@ function showLists(newFilter) {
                                     <div class="listelement-config-container">
                                         <i class="fas fa-ellipsis-h listelement-config-icon"></i>
                                         <div class="dropdown">
-                                            <div onclick="updateListElement(event)">Endre</div>
-                                            <div onclick="">Forfallsdato</div>
-                                            <div class="dropdown-sub-container">Tagger
+                                            <div alt="endre" onclick="updateListElement(event)">Endre</div>
+                                            <div alt="deadline" onclick="">Forfallsdato</div>
+                                            <div alt="tagger" class="dropdown-sub-container">Tagger
                                                 <div class="dropdown-sub">
-                                                    <div onclick="toggleListElementTag(event,'hjem')">
-                                                        <i class="fas fa-circle filter-hjem"></i>
+                                                    <div alt="hjem" onclick="toggleListElementTag(event,'hjem')">
+                                                        <i alt="ikon" class="fas fa-circle filter-hjem"></i>
                                                         Hjem
                                                     </div>
                                                     <div onclick="toggleListElementTag(event,'jobb')">
-                                                        <i class="fas fa-circle filter-jobb"></i>
+                                                        <i alt="jobb" class="fas fa-circle filter-jobb"></i>
                                                         Jobb
                                                     </div>
                                                     <div onclick="toggleListElementTag(event,'skole')">
-                                                        <i class="fas fa-circle filter-skole"></i>
+                                                        <i alt="skole" class="fas fa-circle filter-skole"></i>
                                                         Skole
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div onclick="deleteListElement(event)">Slett</div>
+                                            <div alt="slett" onclick="deleteListElement(event)">Slett</div>
                                         </div>
                                     </div>
                                 </li>`;
