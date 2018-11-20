@@ -407,10 +407,10 @@ function showLists(newFilter) {
                 html += `<div id="${listId}" class="list-card">
                             <h3>${lists[i].title}</h3>
                             <div class="list-config-container">
-                            <i class="fas fa-cog list-config-icon"></i>
+                            <i class="fas fa-cog list-config-icon" alt="listeinnstillinger"></i>
                             <div class="dropdown">
-                                <div onclick="updateListTitle(event)">Endre</div>
-                                <div onclick="deleteList(event)">Slett</div>
+                                <div alt="endre listenavn" onclick="updateListTitle(event)">Endre</div>
+                                <div alt="slett liste" onclick="deleteList(event)">Slett</div>
                             </div>
                         </div>`;
                 if (listContent) {
@@ -431,29 +431,25 @@ function showLists(newFilter) {
                                         <div class="duedate">${duedateString}</div>
                                         <i class="fas fa-ellipsis-h listelement-config-icon"></i>
                                         <div class="dropdown">
-                                            <div onclick="updateListElement(event)">Endre</div>
-                                            <div onclick="updateDueDate(event)">Forfallsdato</div>
-                                            <div class="dropdown-sub-container">Tagger
+                                            <div alt="endre listeelement" onclick="updateListElement(event)">Endre</div>
+                                            <div alt="endre forfallsdato" onclick="updateDueDate(event)">Forfallsdato</div>
+                                            <div alt="legg til tagger på listeelement" class="dropdown-sub-container">Tagger
                                                 <div class="dropdown-sub">
-                                                    <div onclick="toggleListElementTag(event,'none')">
-                                                        <i class="far fa-circle filter-all"></i>
-                                                        Ingen
-                                                    </div>
-                                                    <div onclick="toggleListElementTag(event,'hjem')">
+                                                    <div alt="tag hjem" onclick="toggleListElementTag(event,'hjem')">
                                                         <i class="fas fa-circle filter-hjem"></i>
                                                         Hjem
                                                     </div>
-                                                    <div onclick="toggleListElementTag(event,'jobb')">
+                                                    <div alt="tag jobb" onclick="toggleListElementTag(event,'jobb')">
                                                         <i class="fas fa-circle filter-jobb"></i>
                                                         Jobb
                                                     </div>
-                                                    <div onclick="toggleListElementTag(event,'skole')">
+                                                    <div alt="tag skole" onclick="toggleListElementTag(event,'skole')">
                                                         <i class="fas fa-circle filter-skole"></i>
                                                         Skole
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div onclick="deleteListElement(event)">Slett</div>
+                                            <div alt="slett listeelement" onclick="deleteListElement(event)">Slett</div>
                                         </div>
                                     </div>
                                 </li>`;
