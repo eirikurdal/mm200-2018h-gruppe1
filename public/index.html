@@ -10,13 +10,13 @@
 </head>
 
 <body>
-    <div id="header">
+    <div id="header" alt="main_header">
     </div>
     <div id="templateContainer"></div>
 
     <template id="newUserTemplate">
         <div id="newUserBox">
-            <img class="login-logo" src="./img/Utdl_logo_v2.png">
+            <img class="login-logo" alt="utdl_logo" src="./img/Utdl_logo_v2.png">
             <h1>NY BRUKER</h1>
             <form id="newUserForm" onsubmit="addNewUser(event)">
                 <input id="newUsername" class="input-top" type="text" placeholder="Brukernavn" required>
@@ -34,7 +34,7 @@
 
     <template id="loginTemplate">
         <div id="loginBox">
-            <img class="login-logo" src="./img/Utdl_logo_v2.png">
+            <img class="login-logo" alt="utdl_logo" src="./img/Utdl_logo_v2.png">
             <h1>LOGG INN</h1>
             <form id="loginForm" onsubmit="login(event)">
                 <input id="loginEmail" class="input-top" type="email" placeholder="E-mail" required>
