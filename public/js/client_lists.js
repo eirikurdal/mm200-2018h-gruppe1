@@ -7,6 +7,8 @@ const GET_SINGLE_LIST_ENDPOINT = '/lists/get';
 const GET_ALL_LISTS_ENDPOINT = '/lists/getall';
 const DELETE_LIST_ENDPOINT = '/lists/delete';
 const DELETE_LISTELEMENT_ENDPOINT = '/lists/delete/element';
+const TOGGLE_LIST_PUBLIC_ENDPOINT = '/lists/togglepublic';
+const TOGGLE_LIST_CONTRIBUTOR_ENDPOINT = '/lists/togglecontributor';
 
 // ADD new list elements --------
 const INPUT_LIST_TITLE = "listTitle";
@@ -198,7 +200,7 @@ function updateListelementsInDB(userId, token, listId, listElements, idCount) {
 }
 
 
-// Update due date -------------------- UFERDIG
+// Update due date --------------------
 async function updateDueDate(evt) {
     let userId = localStorage.getItem("id");
     let token = localStorage.getItem("token");
@@ -397,6 +399,94 @@ function deleteListElementInDB(userId, token, listId, listElementId) {
 }
 
 
+// Toggle list public -------------------------------
+function togglePublic(evt) {
+    let confirmed = confirm("Er du sikker på at du vil endre listens delingsinnstillinger?");
+    if (confirmed !== true) {
+        return;
+    }
+
+    let userId = localStorage.getItem("id");
+    let token = localStorage.getItem("token");
+    let listId = evt.currentTarget.parentNode.parentNode.parentNode.id;
+
+    toggleListPublicInDB(userId, token, listId).then(response => {
+        window.alert(response.msg);
+        showLists();
+    }).catch(error => {
+        window.alert(error);
+    });
+}
+
+function toggleListPublicInDB(userId, token, listId) {
+    return fetch(TOGGLE_LIST_PUBLIC_ENDPOINT, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json',
+            'Auth': token,
+            'userId': userId,
+            'listId': listId
+        }
+    }).then(data => {
+
+        if (data.status === 200) {
+            return data.json();
+        } else if (data.status === 400) {
+            return Promise.reject(new Error(data.status + ', Noe gikk galt!'));
+        } else if (data.status === 404) {
+            return Promise.reject(new Error(data.status + ', Listen du vil offentliggjøre eksisterer ikke.'));
+        } else {
+            return Promise.reject(new Error(data.status + ', error'));
+        }
+    });
+}
+
+// Toggle contributor -------------------------------
+function toggleContributor(evt) {
+    let email = prompt("Skriv inn E-MAIL til brukeren du vil dele listen med.", "name@mail.com");
+    if (!email || email == "name@mail.com") {
+        return;
+    }
+    
+    let userId = localStorage.getItem("id");
+    let token = localStorage.getItem("token");
+    let listId = evt.currentTarget.parentNode.parentNode.parentNode.id;
+
+    toggleContributorInDB(userId, token, listId, email).then(response => {
+        window.alert(response.msg);
+        showLists();
+    }).catch(error => {
+        window.alert(error);
+    });
+}
+
+function toggleContributorInDB(userId, token, listId, email) {
+    return fetch(TOGGLE_LIST_CONTRIBUTOR_ENDPOINT, {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Accept': 'application/json',
+            'Auth': token,
+            'userId': userId,
+            'listId': listId,
+            'email': email
+        }
+    }).then(data => {
+
+        if (data.status === 200) {
+            return data.json();
+        } else if (data.status === 400) {
+            return Promise.reject(new Error(data.status + ', Noe gikk galt!'));
+        } else if (data.status === 404) {
+            return Promise.reject(new Error(data.status + ', Listen du vil endre delingsinnstillinger for eksisterer ikke.'));
+        } else {
+            return Promise.reject(new Error(data.status + ', error'));
+        }
+    });
+}
+
+
 // Utilities ---------------------------------
 function showLists(newFilter) {
     let userId = localStorage.getItem("id");
@@ -405,9 +495,15 @@ function showLists(newFilter) {
     getAllListsFromDB(userId, token).then(response => {
         if (response.status !== 200) {
             let lists = response.lists;
-
             let listContainer = document.getElementById("listContainer");
             listContainer.innerHTML = "";
+            
+            // Rapportere antall lister i meny
+            let userGreeting = document.querySelector(".user-greeting");
+            let username = localStorage.getItem("username");
+            let numberOfLists = lists.length;
+            userGreeting.innerHTML = `Hei ${username}!<br>Du har totalt ${numberOfLists} lister.`;
+            
 
             for (let i = 0; i < lists.length; i++) {
                 let listContent = lists[i].content;
@@ -439,6 +535,8 @@ function showLists(newFilter) {
                             <i class="fas fa-cog list-config-icon" alt="listeinnstillinger"></i>
                             <div class="dropdown">
                                 <div alt="endre listenavn" onclick="updateListTitle(event)">Endre</div>
+                                <div alt="gjør offentlig" onclick="togglePublic(event)">Offentlig/Privat</div>
+                                <div alt="endre delingsinnstillinger" onclick="toggleContributor(event)">Deling</div>
                                 <div alt="slett liste" onclick="deleteList(event)">Slett</div>
                             </div>
                         </div>`;

@@ -70,6 +70,7 @@ function login(evt) {
     sendAndRecieveLoginInfo(user).then(user => {
         localStorage.setItem("token", user.token);
         localStorage.setItem("id", user.id);
+        localStorage.setItem("username", user.username);
         greetUser(user.msg);
         window.location = "viewLists.html";
     }).catch(err => {

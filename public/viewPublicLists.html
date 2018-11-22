@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <meta charset="utf-8">
-    <title>Lists</title>
+    <title>Public lists</title>
 
     <!-- My Styles -->
     <link href="css/styles_simple.css" rel="stylesheet" />
@@ -25,34 +25,26 @@
             <i class="fas fa-bars config-icon" alt="icon_1" onclick="toggleMenu()"></i>
         </div>
         <img class="header-logo" alt="utdl_logo" src="./img/Utdl_logo_v2.png">
-        <div class="new-list-container">
-            <i class="fas fa-plus-square new-list-icon" alt="icon_2" onclick="createList()"></i>
-        </div>
+        
     </div>
 
     <!-- MENU -->
     <div class="menu-overlay" onclick="toggleMenu()">
         <div class="menu-container">
             <div class="user-greeting"></div>
-            <div class="menu-btn" onclick="deleteUser()">
-                <p>Slett bruker</p>
-            </div>
-            <div class="menu-btn" onclick="changePassword()">
-                <p>Endre passord</p>
-            </div>
-            <div class="menu-btn" onclick="logout()">
-                <p>Logg ut</p>
+            <div class="menu-btn" onclick="window.location = 'index.html'">
+                <p>Gå til login</p>
             </div>
         </div>
     </div>
 
     <!-- FILTER CONTAINER -->
     <div id="filterContainer">
-        <div class="filter-btn active-filter" alt="alle" onclick="showLists('all'); toggleFilter(event, 'all')"><i class="far fa-circle filter-all"></i> Alle</div>
-        <div class="filter-btn" alt="filter hjem" onclick="showLists('hjem'); toggleFilter(event,'hjem')"><i class="fas fa-circle filter-hjem"></i> Hjem</div>
-        <div class="filter-btn" alt="filter jobb" onclick="showLists('jobb'); toggleFilter(event,'jobb')"><i class="fas fa-circle filter-jobb"></i> Jobb</div>
-        <div class="filter-btn" alt="filter skole" onclick="showLists('skole'); toggleFilter(event,'skole')"><i class="fas fa-circle filter-skole"></i> Skole</div>
-        <div class="filter-btn" alt="filter forfaller i dag" onclick="showLists('duetoday'); toggleFilter(event,'duetoday')"><i class="fas fa-clock filter-duetoday"></i> I dag</div>
+        <div class="filter-btn active-filter" alt="alle" onclick="showPublicLists('all'); toggleFilter(event, 'all')"><i class="far fa-circle filter-all"></i> Alle</div>
+        <div class="filter-btn" alt="filter hjem" onclick="showPublicLists('hjem'); toggleFilter(event,'hjem')"><i class="fas fa-circle filter-hjem"></i> Hjem</div>
+        <div class="filter-btn" alt="filter jobb" onclick="showPublicLists('jobb'); toggleFilter(event,'jobb')"><i class="fas fa-circle filter-jobb"></i> Jobb</div>
+        <div class="filter-btn" alt="filter skole" onclick="showPublicLists('skole'); toggleFilter(event,'skole')"><i class="fas fa-circle filter-skole"></i> Skole</div>
+        <div class="filter-btn" alt="filter forfaller i dag" onclick="showPublicLists('duetoday'); toggleFilter(event,'duetoday')"><i class="fas fa-clock filter-duetoday"></i> I dag</div>
     </div>
 
     <!-- LIST CONTAINER -->
@@ -79,7 +71,7 @@
 
 
 </script>
-<script src="js/client_lists.js" type="application/javascript"></script>
+<script src="js/client_publicLists.js" type="application/javascript"></script>
 <script src="js/client_user.js" type="application/javascript"></script>
 
 
